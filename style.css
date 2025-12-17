@@ -1,0 +1,248 @@
+/* --- Reset e Base --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0b0b0b;
+    color: #ededed;
+    /* Usando uma fonte de sistema limpa similar a Helvetica */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+img, video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- Header e Navegação --- */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* Altura fixa para o header */
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between; /* Separa os 3 elementos (Esq, Centro, Dir) */
+    align-items: center;
+    z-index: 1000;
+    background-color: rgba(11, 11, 11, 0.9); /* Fundo levemente transparente */
+    backdrop-filter: blur(5px); /* Efeito de desfoque moderno */
+    border-bottom: 1px solid #222;
+}
+
+/* Texto do Logo na esquerda */
+.logo-text {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    font-size: 1rem;
+    flex: 1; /* Ocupa espaço para ajudar a centralizar o GIF */
+}
+
+/* GIF no centro */
+.header-gif {
+    height: 60px; /* Altura fixa para caber no header */
+    width: auto;  /* Largura automática para manter proporção */
+    object-fit: contain;
+    /* Não precisa de flex:1 aqui, ele vai ficar no centro natural */
+}
+
+/* Hamburger Container na direita */
+.hamburger-container {
+    flex: 1; /* Ocupa espaço para equilibrar o lado direito */
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Hamburger Icon */
+.hamburger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 20px;
+    position: relative;
+    z-index: 1001;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #ededed;
+    position: absolute;
+    transition: all 0.3s ease-in-out;
+}
+
+.hamburger span:first-child { top: 0; }
+.hamburger span:last-child { bottom: 0; }
+
+/* Animação do Hamburger para X */
+.hamburger.active span:first-child {
+    transform: translateY(9px) rotate(45deg);
+}
+.hamburger.active span:last-child {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Menu Lateral */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    background-color: #0b0b0b;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    z-index: 999;
+    border-left: 1px solid #222;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+.mobile-menu ul {
+    list-style: none;
+    text-align: center;
+}
+
+.menu-link {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 20px 0;
+    text-transform: uppercase;
+    transition: color 0.3s;
+}
+
+.menu-link:hover {
+    color: #666;
+}
+
+/* --- Seções Principais --- */
+main {
+    /* Espaço maior no topo para compensar o header fixo de 80px */
+    padding-top: 120px;
+    padding-bottom: 80px;
+}
+
+/* Video Section */
+.video-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 100px auto;
+    padding: 0 20px;
+}
+
+/* Product Section */
+.product-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.product-info {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.product-info h2 {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 400;
+}
+
+.product-info p {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.buy-btn {
+    display: inline-block;
+    background-color: #ededed;
+    color: #0b0b0b;
+    padding: 15px 40px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.buy-btn:hover {
+    background-color: #ffffff;
+    transform: scale(1.02);
+}
+
+/* --- Footer --- */
+.footer {
+    border-top: 1px solid #222;
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #555;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer a:hover {
+    color: #ededed;
+}
+
+/* --- Animações de Scroll (Intersection Observer) --- */
+.hidden {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Responsividade (Desktop) --- */
+@media (min-width: 768px) {
+    .logo-text {
+        font-size: 1.2rem;
+    }
+
+    .header-gif {
+        height: 70px; /* Um pouco maior no desktop */
+    }
+
+    .product-grid {
+        grid-template-columns: 1.5fr 1fr;
+        align-items: start;
+        gap: 20px;
+    }
+}
