@@ -68,7 +68,6 @@ a {
     object-fit: contain;
 }
 
-
 /* Hamburger Container na direita */
 .hamburger-container {
     flex: 1; /* Ocupa espaço para equilibrar o lado direito */
@@ -177,11 +176,11 @@ main {
 
 .product-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-bottom: 30px;
+    grid-template-columns: 1fr; /* Força uma única coluna */
+    gap: 20px;
+    max-width: 800px; /* Opcional: limita a largura para as fotos não ficarem gigantescas no PC */
+    margin: 0 auto; /* Centraliza a grid */
 }
-
 .product-info {
     text-align: center;
     margin-top: 40px;
@@ -247,7 +246,9 @@ main {
     transform: translateY(0);
 }
 
-/* --- Responsividade (Desktop) --- */
+/* --- Responsividade --- */
+
+/* Ajustes para Telas Pequenas (Mobile) */
 @media (max-width: 480px) {
     .header {
         height: 90px;
@@ -256,20 +257,28 @@ main {
     .header-gif {
         height: 78px;
     }
-}
-    .hamburger {
-        display: none;
-}
+
     .logo-text {
-        font-size: 1.2rem;
-}
-    .product-grid {
-        grid-template-columns: 1.5fr 1fr;
-        align-items: start;
-        gap: 20px;
-}
+        font-size: 0.9rem;
+    }
 }
 
+/* Ajustes para Telas Grandes (Desktop) */
+@media (min-width: 769px) {
+    .logo-text {
+        font-size: 1.2rem;
+    }
+
+    /* Mantemos as fotos uma embaixo da outra no desktop também,
+       mas podemos ajustar o tamanho máximo para melhor estética.
+    */
+    .product-grid {
+        grid-template-columns: 1fr;
+        max-width: 700px;
+    }
+}
+
+/* --- Preloader e Estados --- */
 #preloader {
     position: fixed;
     inset: 0;
@@ -280,6 +289,7 @@ main {
 body.loaded #preloader {
     display: none;
 }
+
 .buy-btn.disabled {
     background: #333;
     color: #999;
