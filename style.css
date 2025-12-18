@@ -201,20 +201,24 @@ main {
 
 .buy-btn {
     display: inline-block;
-    background-color: #ededed;
-    color: #0b0b0b;
-    padding: 15px 40px;
-    text-transform: uppercase;
+    background: #9b2cff; /* roxo oficial da marca */
+    color: #ffffff;
+    padding: 16px 36px;
+    border-radius: 6px;
+    font-size: 1rem;
     font-weight: 700;
+    text-decoration: none;
     letter-spacing: 1px;
-    transition:
-        transform 0.2s,
-        background-color 0.2s;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 12px rgba(155, 44, 255, 0.35);
 }
 
+/* Hover */
 .buy-btn:hover {
-    background-color: #ffffff;
-    transform: scale(1.02);
+    background: #a845ff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(155, 44, 255, 0.45);
 }
 
 /* --- Footer --- */
@@ -296,4 +300,74 @@ body.loaded #preloader {
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.8;
+}
+
+/* Produto */
+.product-info {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.product-info h2 {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+
+/* Valor */
+.price-box {
+    margin-bottom: 20px;
+}
+
+.price-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #777;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Descrição */
+.product-desc {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+/* Extras */
+.extras {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+}
+
+.extras li {
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+/* Prazo */
+.delivery-box {
+    border: 1px solid #222;
+    padding: 15px;
+    margin-bottom: 30px;
+}
+
+.delivery-title {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.delivery-time {
+    font-size: 1.1rem;
+    font-weight: 600;
 }
