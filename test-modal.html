@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Modal de Termos</title>
+    <link rel="stylesheet" href="modal.css">
+    <style>
+        body {
+            background: #0b0b0b;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+        button {
+            background: #9b2cff;
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste do Modal de Termos</h1>
+    <p>Clique no botão abaixo para ver o modal:</p>
+    <button onclick="showModal()">MOSTRAR MODAL DE TERMOS</button>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal-overlay" style="z-index: 2000;">
+        <div class="modal-content" style="max-width: 450px; text-align: left;">
+            <div class="modal-icon" style="justify-content: center; display: flex;">⚠️</div>
+            <h3 style="text-align: center; margin-bottom: 15px; color: #9b2cff; text-transform: uppercase; letter-spacing: 1px;">
+                Aviso Importante</h3>
+            <div class="modal-message" style="font-size: 0.9rem; line-height: 1.5; color: #ddd; margin-bottom: 20px;">
+                <p style="margin-bottom: 15px;">Para garantir a segurança e evitar envios de spam, nosso sistema de checkout
+                    possui uma etapa de verificação:</p>
+                <ol style="padding-left: 20px; list-style-position: outside; margin-bottom: 15px;">
+                    <li style="margin-bottom: 10px;">Preencha seus dados abaixo.</li>
+                    <li style="margin-bottom: 10px;">Clique em <strong>REALIZAR PAGAMENTO</strong>.</li>
+                    <li>Após o pagamento, o botão <strong>ENVIAR DADOS</strong> será liberado para concluir seu pedido.</li>
+                </ol>
+                <div style="background: rgba(155, 44, 255, 0.1); padding: 10px; border-radius: 4px; border: 1px solid rgba(155, 44, 255, 0.3);">
+                    <label style="display: flex; align-items: start; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="modal-term-check" style="width: 20px; height: 20px; accent-color: #9b2cff; flex-shrink: 0; margin-top: 2px;">
+                        <span style="font-size: 0.8rem; font-weight: bold; color: #fff;">Li e concordo com os termos de pagamento anti-spam.</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-buttons" style="justify-content: center;">
+                <button id="btn-accept-terms" class="modal-btn" disabled style="width: 100%; max-width: 250px; background: #333; cursor: not-allowed;">
+                    CONCORDO E PREENCHER
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('termsModal');
+        const checkbox = document.getElementById('modal-term-check');
+        const btnAccept = document.getElementById('btn-accept-terms');
+
+        // Habilita botão quando checkbox é marcado
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                btnAccept.disabled = false;
+                btnAccept.style.background = 'linear-gradient(180deg, #9b2cff 0%, #7a22cc 100%)';
+                btnAccept.style.cursor = 'pointer';
+            } else {
+                btnAccept.disabled = true;
+                btnAccept.style.background = '#333';
+                btnAccept.style.cursor = 'not-allowed';
+            }
+        });
+
+        // Fecha modal
+        btnAccept.addEventListener('click', () => {
+            alert('Termos aceitos!');
+            modal.classList.remove('active');
+        });
+
+        function showModal() {
+            console.log('Mostrando modal...');
+            modal.classList.add('active');
+        }
+
+        // Mostra o modal automaticamente ao carregar
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showModal();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

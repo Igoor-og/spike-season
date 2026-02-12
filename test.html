@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TESTE Checkout - Spike Season</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="modal.css" />
+    <link rel="icon" href="assets/favicon.png" type="image/png" />
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+
+<body>
+    <div id="preloader"></div>
+
+    <header class="header">
+        <a href="index.html" class="logo-text">SPIKE SEASON</a>
+
+        <div class="hamburger-container">
+            <!-- Hamburger removido no checkout para foco -->
+        </div>
+    </header>
+
+    <main>
+        <section class="product-section" style="padding-top: 40px; max-width: 900px; margin: 0 auto">
+            <div class="checkout-card-box">
+                <a href="index.html" class="btn-back">
+                    ← VOLTAR
+                </a>
+
+                <div class="card-content-grid">
+                    <div class="product-info-side">
+                        <div class="image-container-square">
+                            <!-- Imagem será fixa photo1.jpeg -->
+                            <img src="assets/photo1.jpeg" alt="Spike Glasses" class="img-real"
+                                id="checkout-product-img" />
+                        </div>
+
+                        <h2 style="font-size: 1.2rem; margin: 15px 0 5px">
+                            SPIKE GLASSES (CUSTOM)
+                        </h2>
+
+                        <div class="color-selector" style="margin-bottom: 20px;">
+                            <span class="color-label"
+                                style="font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 5px;">ESCOLHA
+                                A COR DA LENTE:</span>
+                            <div class="dots-container" style="display: flex; gap: 10px;">
+                                <div class="color-dot active" data-color="preta" data-img="assets/lente-preta.jpg"
+                                    style="background-color: #111;"></div>
+                                <div class="color-dot" data-color="amarela" data-img="assets/lente-amarela.jpg"
+                                    style="background-color: #FFD700;"></div>
+                                <div class="color-dot" data-color="marrom" data-img="assets/lente-marrom.jpg"
+                                    style="background-color: #5c4033;"></div>
+                                <div class="color-dot" data-color="camaleao" data-img="assets/lente-camaleao.jpg"
+                                    style="background: linear-gradient(135deg, #4b0082, #00ffff);"></div>
+                            </div>
+                            <p id="checkout-color-display" style="font-size: 0.8rem; margin-top: 5px; color: #888;">COR:
+                                PRETA</p>
+                        </div>
+
+                        <div class="warning-purple">
+                            <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 2L1 21h22L12 2zm1 17h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                            </svg>
+                            <span>PRAZO DE ENTREGA: APROXIMADAMENTE 1 MÊS (PRODUÇÃO SOB DEMANDA)</span>
+                        </div>
+
+                        <div class="price-header">
+                            <span id="display-price" class="price">R$ 110,00</span>
+                        </div>
+                    </div>
+
+                    <div class="checkout-form-side">
+                        <form id="checkout-form">
+                            <div class="input-group">
+                                <input type="text" id="form-nome" name="nome" placeholder="NOME COMPLETO" required />
+                                <input type="tel" id="form-whatsapp" name="whatsapp" placeholder="WHATSAPP (DDD)"
+                                    required />
+                                <input type="email" id="form-email" name="email" placeholder="SEU E-MAIL" required />
+                                <input type="text" id="form-cpf" name="cpf" placeholder="CPF (000.000.000-00)"
+                                    required />
+                                <input type="text" id="form-cep" name="cep" placeholder="CEP" required />
+                                <input type="text" id="form-endereco" name="endereco" placeholder="RUA E NÚMERO"
+                                    required />
+                                <input type="text" id="form-bairro" name="bairro" placeholder="BAIRRO / CIDADE"
+                                    required />
+                            </div>
+
+                            <!-- Campo de Cupom -->
+                            <div class="input-group" style="margin-top: 15px; display: flex; gap: 10px;">
+                                <input type="text" id="form-cupom" name="cupom" placeholder="CUPOM DE DESCONTO"
+                                    style="margin-bottom: 0;" />
+                                <button type="button" id="btn-aplicar-cupom" class="buy-btn-small"
+                                    style="width: auto; margin:0;">APLICAR</button>
+                            </div>
+                            <p id="msg-cupom" style="font-size: 0.7rem; margin-top: 5px; min-height: 15px;"></p>
+
+                            <div class="payment-selector" style="margin-top: 20px">
+                                <p style="font-size: 0.7rem; color: #666; margin-bottom: 10px;">
+                                    FORMA DE PAGAMENTO:
+                                </p>
+                                <label class="pay-option">
+                                    <input type="radio" name="pay_method" value="mercadopago" checked
+                                        onclick="togglePayment('mercadopago')" />
+                                    <span>MERCADO PAGO (PIX / CARTÃO)</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" id="btn-final" class="confirm-order-btn">
+                                FINALIZAR PAGAMENTO
+                            </button>
+
+                            <input type="hidden" id="hidden-valor" name="valor_pago" value="110.00" />
+                            <input type="hidden" id="hidden-cor" name="cor_lente" value="" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SPIKE SEASON</p>
+        <a href="mailto:Loren1629loren@gmail.com">Suporte</a>
+    </footer>
+
+    <!-- Modal Customizado -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-message">Mensagem padrão</div>
+            <div class="modal-buttons">
+                <button class="modal-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

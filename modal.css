@@ -1,0 +1,230 @@
+/**
+ * SPIKE SEASON - Season 1
+ * Custom Modal System
+ */
+
+/* ===== MODAL CUSTOMIZADO ===== */
+/* Substitui os alerts padrão do JavaScript */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-overlay.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #0a0a0a;
+  /* Fundo quase preto minimalista */
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+  text-align: center;
+}
+
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #9b2cff;
+  /* Roxo da marca */
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 0 10px #9b2cff;
+}
+
+/* Tipos de modal - Minimalista: Apenas muda ícone ou sutileza */
+.modal-content.success::before {
+  background: #9b2cff;
+}
+
+.modal-content.error::before {
+  background: #ff2c2c;
+  /* Vermelho sutil para erro crítico */
+  box-shadow: 0 0 10px #ff2c2c;
+}
+
+.modal-content.warning::before {
+  background: #9b2cff;
+  /* Mantém roxo para aviso */
+}
+
+.modal-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.svg-icon {
+  width: 60px;
+  height: 60px;
+  fill: #fff;
+}
+
+.modal-content.success .svg-icon {
+  fill: #9b2cff;
+}
+
+.modal-content.error .svg-icon {
+  fill: #ff2c2c;
+}
+
+.modal-content.warning .svg-icon {
+  fill: #9b2cff;
+}
+
+.modal-message {
+  color: #eee;
+  font-family: 'Helvetica Neue', sans-serif;
+  /* Fonte clean */
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  font-weight: 300;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 12px 40px;
+  border: 1px solid #9b2cff;
+  border-radius: 4px;
+  /* Mais quadrado/minimalista */
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent;
+  color: #9b2cff;
+}
+
+.modal-btn:hover {
+  background: #9b2cff;
+  color: #000;
+  box-shadow: 0 0 15px rgba(155, 44, 255, 0.3);
+}
+
+.modal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.modal-btn.secondary {
+  background: #333;
+  border: 1px solid #555;
+}
+
+.modal-btn.secondary:hover {
+  background: #444;
+  border-color: #666;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.modal-overlay.closing {
+  animation: fadeOut 0.2s ease-in-out;
+}
+
+/* Loading Spinner (para estados de carregamento) */
+.modal-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #9b2cff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 30px 20px;
+    max-width: 95%;
+  }
+
+  .modal-icon {
+    font-size: 36px;
+  }
+
+  .modal-message {
+    font-size: 1rem;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+  }
+
+  .modal-btn {
+    width: 100%;
+  }
+}

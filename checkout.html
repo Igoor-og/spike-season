@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Spike Season</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="modal.css" />
+    <link rel="icon" href="assets/favicon.png" type="image/png" />
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+
+<body>
+    <div id="preloader"></div>
+
+    <header class="header">
+        <a href="index.html" class="logo-text">SPIKE SEASON</a>
+
+        <div class="hamburger-container">
+            <!-- Hamburger removido no checkout para foco -->
+        </div>
+    </header>
+
+    <main>
+        <section class="product-section" style="padding-top: 40px; max-width: 900px; margin: 0 auto">
+            <div class="checkout-card-box">
+                <div id="wizard-steps-container">
+                    <!-- Step 1: Seleção de Cor e Quantidade -->
+                    <div id="step-1" class="wizard-step active">
+                        <a href="index.html" class="btn-back">← VOLTAR</a>
+                        <div class="card-content-grid">
+                            <!-- Lado Esquerdo: Foto Fixa original -->
+                            <div class="product-image-side">
+                                <div class="image-container-square">
+                                    <img src="assets/photo1.jpeg" alt="Spike Glasses" class="img-real"
+                                        id="checkout-product-img" />
+                                </div>
+                            </div>
+
+                            <!-- Lado Direito: Carrinho e Seletor -->
+                            <div class="product-info-side">
+                                <section id="cart-section">
+                                    <h3
+                                        style="font-size: 0.8rem; letter-spacing: 2px; color: #666; margin-bottom: 20px;">
+                                        SEU CARRINHO</h3>
+                                    <div id="cart-items-container">
+                                        <!-- Preenchido via JS -->
+                                    </div>
+                                </section>
+
+                                <div class="color-selector"
+                                    style="margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
+                                    <span class="color-label"
+                                        style="font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 15px;">ADICIONAR
+                                        OUTRA COR:</span>
+                                    <div class="dots-container" style="display: flex; gap: 15px; align-items: center;">
+                                        <div class="color-dot active" data-color="preta"
+                                            style="background-color: #1c1c1c;"></div>
+                                        <div class="color-dot" data-color="amarela" style="background-color: #c5a028;">
+                                        </div>
+                                        <div class="color-dot" data-color="marrom" style="background-color: #1a0f0a;">
+                                        </div>
+                                        <div class="color-dot" data-color="furta cor"
+                                            style="background: linear-gradient(135deg, #ff8c00, #ff0080, #7b00ff);">
+                                        </div>
+
+                                        <button type="button" onclick="addNewColorToCart()" class="buy-btn"
+                                            style="padding: 10px 20px; font-size: 0.7rem;">ADICIONAR</button>
+                                    </div>
+                                    <p id="checkout-color-display"
+                                        style="font-size: 0.7rem; margin-top: 10px; color: #666;">SELECIONADO: PRETA</p>
+                                </div>
+
+                                <div class="price-header"
+                                    style="margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
+                                    <span class="price-label">TOTAL DO PEDIDO</span>
+                                    <span class="price display-price-val">R$ 110,00</span>
+                                </div>
+
+                                <button type="button" onclick="nextStep()" class="confirm-order-btn"
+                                    style="margin-top: 30px;">
+                                    PROSSEGUIR PARA DADOS →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Dados do Cliente -->
+                    <div id="step-2" class="wizard-step">
+                        <button type="button" onclick="prevStep()" class="btn-back">← VOLTAR PARA O CARRINHO</button>
+
+                        <!-- Seção de Termos (aparece primeiro) -->
+                        <div id="terms-section" style="max-width: 600px; margin: 0 auto;">
+                            <h2
+                                style="font-size: 1.2rem; margin-bottom: 20px; text-align: center; letter-spacing: 2px; color: #9b2cff;">
+                                ⚠️ AVISO IMPORTANTE</h2>
+
+                            <div
+                                style="background: rgba(155, 44, 255, 0.05); border: 1px solid rgba(155, 44, 255, 0.2); border-radius: 8px; padding: 30px; margin-bottom: 30px;">
+                                <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 20px; color: #ddd;">
+                                    Para garantir a segurança e evitar envios de spam, nosso sistema de checkout possui
+                                    uma etapa de verificação:
+                                </p>
+
+                                <ol style="padding-left: 25px; margin-bottom: 25px; color: #ccc; line-height: 1.8;">
+                                    <li style="margin-bottom: 12px;">Você irá preencher seus dados no próximo passo</li>
+                                    <li style="margin-bottom: 12px;">Clique em <strong style="color: #9b2cff;">REALIZAR
+                                            PAGAMENTO</strong></li>
+                                    <li style="margin-bottom: 12px;">Após confirmar o pagamento, o botão <strong
+                                            style="color: #9b2cff;">ENVIAR DADOS</strong> será liberado</li>
+                                    <li>Somente após essas etapas seu pedido será processado</li>
+                                </ol>
+
+                                <div
+                                    style="background: rgba(155, 44, 255, 0.1); padding: 20px; border-radius: 4px; border: 1px solid rgba(155, 44, 255, 0.3); margin-bottom: 25px;">
+                                    <label style="display: flex; align-items: start; gap: 12px; cursor: pointer;">
+                                        <input type="checkbox" id="inline-term-check"
+                                            style="width: 22px; height: 22px; accent-color: #9b2cff; flex-shrink: 0; margin-top: 2px;">
+                                        <span style="font-size: 0.95rem; line-height: 1.5; color: #fff;">
+                                            <strong>Li e concordo com os termos.</strong> Entendo que devo realizar o
+                                            pagamento antes de enviar os dados do pedido, e que isso é uma medida de
+                                            segurança contra spam.
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <button id="btn-accept-inline-terms" class="confirm-order-btn" disabled
+                                    style="width: 100%; max-width: 400px; margin: 0 auto; display: block; background: #333; cursor: not-allowed;">
+                                    CONCORDO E PROSSEGUIR
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Seção do Formulário (aparece após aceitar termos) -->
+                        <div id="form-section" style="display: none;">
+                            <h2
+                                style="font-size: 1.2rem; margin-bottom: 20px; text-align: center; letter-spacing: 2px;">
+                                DADOS PARA ENVIO</h2>
+
+                            <div class="price-summary-step2"
+                                style="text-align: center; margin-bottom: 30px; background: rgba(155, 44, 255, 0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(155, 44, 255, 0.1);">
+                                <span
+                                    style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Total
+                                    a pagar:</span>
+                                <span class="price display-price-val" style="font-size: 1.5rem;">R$ 110,00</span>
+                            </div>
+
+                            <div class="checkout-form-side" style="max-width: 500px; margin: 0 auto;">
+                                <form id="checkout-form">
+                                    <div class="input-group">
+                                        <input type="text" id="form-nome" name="nome" placeholder="NOME COMPLETO"
+                                            required />
+                                        <input type="tel" id="form-whatsapp" name="whatsapp"
+                                            placeholder="WHATSAPP (DDD)" required />
+                                        <input type="email" id="form-email" name="email" placeholder="SEU E-MAIL"
+                                            required />
+                                        <input type="text" id="form-cpf" name="cpf" placeholder="CPF (000.000.000-00)"
+                                            required />
+                                        <input type="text" id="form-cep" name="cep" placeholder="CEP" required />
+                                        <input type="text" id="form-endereco" name="endereco" placeholder="RUA E NÚMERO"
+                                            required />
+                                        <input type="text" id="form-bairro" name="bairro" placeholder="CIDADE / BAIRRO"
+                                            required />
+
+                                        <style>
+                                            #form-estado option,
+                                            #form-estado optgroup {
+                                                background-color: #111;
+                                                color: #fff;
+                                            }
+                                        </style>
+                                        <select id="form-estado" name="estado" required
+                                            style="width: 100%; padding: 12px; background-color: #111; border: 1px solid #333; color: #fff; margin-bottom: 10px; border-radius: 4px;">
+                                            <option value="" disabled selected>SELECIONE SEU REGIAO E ESTADO</option>
+                                            <optgroup label="Sudeste (R$ 15,00)">
+                                                <option value="SP">São Paulo</option>
+                                                <option value="RJ">Rio de Janeiro</option>
+                                                <option value="MG">Minas Gerais</option>
+                                                <option value="ES">Espírito Santo</option>
+                                            </optgroup>
+                                            <optgroup label="Sul (R$ 18,00)">
+                                                <option value="PR">Paraná</option>
+                                                <option value="SC">Santa Catarina</option>
+                                                <option value="RS">Rio Grande do Sul</option>
+                                            </optgroup>
+                                            <optgroup label="Centro-Oeste (R$ 20,00)">
+                                                <option value="DF">Distrito Federal</option>
+                                                <option value="GO">Goiás</option>
+                                                <option value="MT">Mato Grosso</option>
+                                                <option value="MS">Mato Grosso do Sul</option>
+                                            </optgroup>
+                                            <optgroup label="Nordeste (R$ 22,00)">
+                                                <option value="BA">Bahia</option>
+                                                <option value="PE">Pernambuco</option>
+                                                <option value="CE">Ceará</option>
+                                                <option value="SE">Sergipe</option>
+                                                <option value="AL">Alagoas</option>
+                                                <option value="PB">Paraíba</option>
+                                                <option value="RN">Rio Grande do Norte</option>
+                                                <option value="MA">Maranhão</option>
+                                                <option value="PI">Piauí</option>
+                                            </optgroup>
+                                            <optgroup label="Norte (R$ 25,00)">
+                                                <option value="AM">Amazonas</option>
+                                                <option value="PA">Pará</option>
+                                                <option value="RO">Rondônia</option>
+                                                <option value="AC">Acre</option>
+                                                <option value="RR">Roraima</option>
+                                                <option value="AP">Amapá</option>
+                                                <option value="TO">Tocantins</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group" style="margin-top: 15px; display: flex; gap: 10px;">
+                                        <input type="text" id="form-cupom" name="cupom" placeholder="CUPOM DE DESCONTO"
+                                            style="margin-bottom: 0;" />
+                                        <button type="button" id="btn-aplicar-cupom" class="buy-btn-small"
+                                            style="width: auto; margin:0;">APLICAR</button>
+                                    </div>
+                                    <p id="msg-cupom" style="font-size: 0.7rem; margin-top: 5px; min-height: 15px;"></p>
+
+                                    <button type="submit" id="btn-final" class="confirm-order-btn"
+                                        style="margin-top: 30px;">
+                                        REALIZAR PAGAMENTO
+                                    </button>
+
+                                    <button type="button" id="btn-enviar-dados" class="confirm-order-btn"
+                                        style="margin-top: 30px; display: none; background: linear-gradient(180deg, #9b2cff 0%, #7a22cc 100%);">
+                                        ENVIAR DADOS DO PEDIDO
+                                    </button>
+
+                                    <input type="hidden" id="hidden-valor" name="valor_pago" value="110.00" />
+                                    <input type="hidden" id="hidden-cor" name="cor_lente" value="" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 SPIKE SEASON</p>
+        <a href="mailto:Loren1629loren@gmail.com">Suporte</a>
+    </footer>
+
+    <!-- Modal Customizado (informativo) -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-message">Mensagem padrão</div>
+            <div class="modal-buttons">
+                <button class="modal-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação (SIM/NÃO) -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content warning">
+            <div class="modal-icon">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                </svg>
+            </div>
+            <div class="modal-message">Você confirma?</div>
+            <div class="modal-buttons">
+                <button id="btn-confirm-yes" class="modal-btn">SIM, CONFIRMO</button>
+                <button id="btn-confirm-no" class="modal-btn secondary">CANCELAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
