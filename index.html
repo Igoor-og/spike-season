@@ -1,85 +1,115 @@
-<!doctype html>
-<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Spike Season</title>
-        <link rel="stylesheet" href="style.css" />
-        <link rel="icon" href="assets/favicon.png" type="image/png" />
-    </head>
-    <body>
-        <div id="preloader"></div>
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-        <header class="header">
-            <div class="logo-text">SPIKE SEASON</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPIKE SEASON 16*29</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+</head>
 
-            <video autoplay loop muted playsinline class="header-gif">
-                <source src="assets/logo.mp4" type="video/mp4" />
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+
+    <!-- Loading State -->
+    <div class="modal-overlay active" id="loading-screen">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Loading Safety Script -->
+    <script>
+        const safeHideLoading = () => {
+            const loader = document.getElementById('loading-screen');
+            if (loader && loader.classList.contains('active')) {
+                loader.classList.remove('active');
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        };
+        // Initial fallback
+        setTimeout(safeHideLoading, 3000);
+        window.addEventListener('load', safeHideLoading);
+    </script>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-text">SKISEASON</div>
+        </div>
+        <div class="header-center">
+            <video autoplay muted loop playsinline style="height: 60px; pointer-events: none;">
+                <source src="assets/logo.mp4" type="video/mp4">
             </video>
-
-            <div class="hamburger-container">
-                <button class="hamburger" aria-label="Abrir Menu">
-                    <span></span>
-                    <span></span>
-                </button>
+        </div>
+        <div class="header-right">
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <nav class="mobile-menu">
-            <ul>
-                <li><a href="#" class="menu-link" id="btn-home">INÍCIO</a></li>
-                <li>
-                    <a href="mailto:Loren1629loren@gmail.com" class="menu-link"
-                        >SUPORTE</a
-                    >
-                </li>
-            </ul>
+    <!-- Side Menu Overlay -->
+    <div class="menu-overlay" id="menu-overlay">
+        <div class="menu-close" id="menu-close">&times;</div>
+        <nav>
+            <a href="#" class="menu-item" data-scroll="top">Início</a>
+            <a href="mailto:contato16.29@gmail.com" class="menu-item">Suporte</a>
         </nav>
+    </div>
 
-        <main>
-            <section class="video-section hidden">
-                <div class="video-container">
-                    <video
-                        autoplay
-                        loop
-                        muted
-                        playsinline
-                        poster="https://via.placeholder.com/1920x1080/0b0b0b/333333?text=Video+Poster"
-                    >
-                        <source src="assets/video.mp4" type="video/mp4" />
-                        Seu navegador não suporta vídeos.
-                    </video>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="video-wrap">
+            <video autoplay muted loop playsinline poster="assets/photo1.jpeg">
+                <source src="assets/video.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="scroll-down" id="scroll-to-swiper">
+                Role pra baixo <br> ↓
+            </div>
+        </div>
+    </section>
+
+    <!-- Sweeper Section -->
+    <section class="swiper-section" id="collection">
+        <div class="container">
+            <div class="swiper swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="assets/swipper (1).jpeg" alt="Collection 1"></div>
+                    <div class="swiper-slide"><img src="assets/swipper (2).jpeg" alt="Collection 2"></div>
+                    <div class="swiper-slide"><img src="assets/swipper (3).jpeg" alt="Collection 3"></div>
+                    <div class="swiper-slide"><img src="assets/swipper (4).jpeg" alt="Collection 4"></div>
+                    <div class="swiper-slide"><img src="assets/swipper (5).jpeg" alt="Collection 5"></div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </section>
 
-            <section class="product-section hidden">
-                <div class="product-grid">
-                    <div class="product-img-main">
-                        <img src="assets/photo1.jpeg" alt="Matue" />
-                    </div>
-                    <div class="product-img-side">
-                        <img src="assets/photo2.jpeg" alt="Oculos" />
-                    </div>
-                </div>
+    <!-- Text Section -->
+    <section class="text-banner">
+        <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+            <h2 class="brand-font">Venha fazer parte de tudo isso.</h2>
+            <button class="btn btn-large" onclick="window.location.href='checkout.html'">Comprar Agora</button>
+        </div>
+    </section>
 
-                <div class="product-info">
-                    <h2>SKI SEASON-SPIKE GLASSES</h2>
-                    <p>
-                        Spikes rosqueáveis. <br />
-                        Acompanha extras exclusivos:<br />
-                        • 2 spikes grandes<br />
-                        • 4 spikes pequenos
-                    </p>
-                    <div class="buy-btn disabled">Venda em breve</div>
-                </div>
-            </section>
-        </main>
+    <!-- Footer Space -->
+    <footer
+        style="padding: 40px; text-align: center; color: var(--gray-text); font-size: 0.8rem; border-top: 1px solid var(--gray-border);">
+        &copy; 2026 16*29. TODOS OS DIREITOS RESERVADOS.
+    </footer>
 
-        <footer class="footer">
-            <p>&copy; 2025 SPIKE SEASON</p>
-            <a href="mailto:Loren1629loren@gmail.com">Suporte</a>
-        </footer>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
 
-        <script src="script.js"></script>
-    </body>
 </html>
