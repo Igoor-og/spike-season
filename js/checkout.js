@@ -13,6 +13,7 @@ const SHIPPING_VALUES = {
 const COUPONS = {
     'SKI15': 0.15,
     'SKI10': 0.10,
+    'FUG10': 0.10,
     'DEV5': 0.954545 // Brings R$ 110 down to ~R$ 5 (110 * (1 - 0.954545) = 5)
 };
 
@@ -384,7 +385,7 @@ function updateSummary() {
         summaryList.appendChild(div);
     });
 
-    const discount = state.appliedCoupon ? subtotal * state.appliedCoupon.value : 0;
+    const discount = state.appliedCoupon ? (subtotal + state.freight) * state.appliedCoupon.value : 0;
 
     // DEV5 logic: Free shipping
     let freightVal = state.freight;
@@ -417,7 +418,9 @@ function updateSummary() {
 
 async function generatePayment() {
     const subtotal = state.cart.reduce((a, b) => a + ((b.price || PRODUCT_PRICE) * (b.quantity || 1)), 0);
-    const discount = (state.appliedCoupon ? subtotal * state.appliedCoupon.value : 0).toFixed(2);
+    // Include freight in discount calculation
+    const discountableAmount = subtotal + state.freight;
+    const discount = (state.appliedCoupon ? discountableAmount * state.appliedCoupon.value : 0).toFixed(2);
 
     // Construct Mercado Pago Items
     const mpItems = state.cart.map(item => ({
