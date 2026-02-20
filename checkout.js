@@ -14,6 +14,7 @@ const COUPONS = {
     'SKI15': 0.15,
     'SKI10': 0.10,
     'FUG10': 0.10,
+    'SWAGBOY10': 0.10,
     'DEV5': 0.954545 // Brings R$ 110 down to ~R$ 5 (110 * (1 - 0.954545) = 5)
 };
 
