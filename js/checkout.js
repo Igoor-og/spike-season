@@ -532,7 +532,8 @@ async function generatePayment() {
 }
 
 function showPaidButton() {
-    state.paymentGenerated = true; // Mark that payment was generated
+    state.paymentGenerated = true;
+    localStorage.setItem('spikePaymentGenerated', 'true'); // Persist so it survives page reload
     const pBtn = document.getElementById('paid-btn');
     const gBtn = document.getElementById('gen-payment');
     if (pBtn) pBtn.classList.remove('hidden');
@@ -590,6 +591,7 @@ async function sendToFormspree() {
             localStorage.removeItem('spikeCart');
             localStorage.removeItem('spikeUserData');
             localStorage.removeItem('spikeStep');
+            localStorage.removeItem('spikePaymentGenerated');
 
             // Show Success Modal with Production Notice
             showModal('Pedido Confirmado!',
@@ -629,6 +631,11 @@ function restoreStep() {
     const savedStep = parseInt(localStorage.getItem('spikeStep'));
     if (savedStep && state.cart.length > 0) {
         setStep(savedStep);
+    }
+
+    // Restore payment state so paid-btn reappears after returning from the bank
+    if (localStorage.getItem('spikePaymentGenerated') === 'true') {
+        showPaidButton();
     }
 
     if (state.userData) {
