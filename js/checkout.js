@@ -2,7 +2,7 @@
  * Spike Season Checkout Logic - Robust Version
  */
 
-const PRODUCT_PRICE = 110.00;
+const PRODUCT_PRICE = 109.99;
 const SHIPPING_VALUES = {
     'SP': 15, 'RJ': 15, 'MG': 15, 'ES': 15,
     'PR': 18, 'SC': 18, 'RS': 18,
@@ -13,9 +13,10 @@ const SHIPPING_VALUES = {
 const COUPONS = {
     'SKI15': 0.15,
     'SKI10': 0.10,
-    'FUG15': 0.15,
+    'FUG10': 0.10,
     'SWAGBOY10': 0.10,
-    'DEV5': 0.954545 // Brings R$ 110 down to ~R$ 5 (110 * (1 - 0.954545) = 5)
+    'DEV5': 0.954545,
+    'FLEXZERO': 0
 };
 
 // Security Note: Token is used directly for stability in file:// environment.
@@ -320,7 +321,7 @@ async function handleCEP() {
 
 function applyCoupon() {
     const code = document.getElementById('cupom')?.value.toUpperCase() || "";
-    if (COUPONS[code]) {
+    if (Object.prototype.hasOwnProperty.call(COUPONS, code)) {
         state.appliedCoupon = { code: code, value: COUPONS[code] };
         showModal('Sucesso', 'Cupom aplicado com sucesso!');
     } else {
@@ -388,9 +389,8 @@ function updateSummary() {
 
     const discount = state.appliedCoupon ? (subtotal + state.freight) * state.appliedCoupon.value : 0;
 
-    // DEV5 logic: Free shipping
     let freightVal = state.freight;
-    if (state.appliedCoupon && state.appliedCoupon.code === 'DEV5') {
+    if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) {
         freightVal = 0;
     }
 
@@ -433,7 +433,7 @@ async function generatePayment() {
 
     // Add Shipping
     let finalFreight = state.freight;
-    if (state.appliedCoupon && state.appliedCoupon.code === 'DEV5') {
+    if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) {
         finalFreight = 0;
     }
 
@@ -690,4 +690,3 @@ function closeModal(id) {
     const ok = document.getElementById('modal-ok');
     if (ok) ok.innerText = 'OK';
 }
-

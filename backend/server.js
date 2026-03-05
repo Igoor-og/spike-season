@@ -22,11 +22,17 @@ app.post('/create-preference', async (req, res) => {
             currency_id: 'BRL'
         }));
 
+        // Apply free shipping for FLEXZERO
+        let finalFreight = Number(freight) || 0;
+        if (coupon && coupon.code === 'FLEXZERO') {
+            finalFreight = 0;
+        }
+
         // Add freight as an item
-        if (freight > 0) {
+        if (finalFreight > 0) {
             mpItems.push({
                 title: 'Frete',
-                unit_price: Number(freight),
+                unit_price: Number(finalFreight),
                 quantity: 1,
                 currency_id: 'BRL'
             });
