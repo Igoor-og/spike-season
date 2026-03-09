@@ -1,0 +1,1 @@
+const PAYMENT_METHOD = "PIX";
