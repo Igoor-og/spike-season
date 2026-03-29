@@ -62,7 +62,7 @@ const state = {
 };
 
 // --- Configuração da API Headless ---
-const API_URL = 'http://payflow.unaux.com/public/api_config.php?site=spike';
+const API_URL = 'https://payflow.unaux.com/public/api_config.php?site=spike';
 
 async function fetchStoreData() {
     try {
@@ -378,7 +378,7 @@ async function handleCEP() {
     if (cep.length !== 8) return;
 
     try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const response = await fetch(`s://viacep.com.br/ws/${cep}/json/`);
         const data = await response.json();
         if (data.erro) {
             showModal('Erro', 'CEP não encontrado.');
