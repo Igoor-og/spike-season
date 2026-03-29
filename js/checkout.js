@@ -62,7 +62,7 @@ const state = {
 };
 
 // --- Configuração da API Headless ---
-const API_URL = 'http://localhost/Checkout/public/api_config.php?site=spike';
+const API_URL = 'http://payflow.unaux.com/public/api_config.php?site=spike';
 
 async function fetchStoreData() {
     try {
