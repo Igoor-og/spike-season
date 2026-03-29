@@ -2,15 +2,15 @@
  * Spike Season Checkout Logic - Robust Version
  */
 
-let PRODUCT_PRICE = 109.90;
-let SHIPPING_VALUES = {
+const PRODUCT_PRICE = 109.90;
+const SHIPPING_VALUES = {
     'SP': 15, 'RJ': 15, 'MG': 15, 'ES': 15,
     'PR': 18, 'SC': 18, 'RS': 18,
     'DF': 20, 'GO': 20, 'MT': 20, 'MS': 20,
     'BA': 22, 'PE': 22, 'CE': 22, 'SE': 22, 'AL': 22, 'PB': 22, 'RN': 22, 'MA': 22, 'PI': 22,
     'AM': 25, 'PA': 25, 'RO': 25, 'AC': 25, 'RR': 25, 'AP': 25, 'TO': 25
 };
-let COUPONS = {
+const COUPONS = {
     'SKI15': 0.15,
     'SKI10': 0.10,
     'FUG10': 0.10,
@@ -61,89 +61,9 @@ const state = {
     paymentGenerated: false
 };
 
-// --- Configuração da API Headless ---
-const API_URL = 'https://payflow.unaux.com/public/api_config.php?site=spike';
-
-async function fetchStoreData() {
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        
-        if (data.preco) {
-            PRODUCT_PRICE = data.preco;
-            console.log("🔥 Preço atualizado pela API:", PRODUCT_PRICE);
-            state.cart.forEach(item => item.price = PRODUCT_PRICE);
-        }
-
-        // 1. Atualizar Tabela de Fretes
-        if (data.tabela_fretes && Object.keys(data.tabela_fretes).length > 0) {
-            SHIPPING_VALUES = data.tabela_fretes;
-            console.log("🚚 Tabela de fretes carregada da API.");
-        } else if (data.frete_padrao > 0) {
-            Object.keys(SHIPPING_VALUES).forEach(uf => SHIPPING_VALUES[uf] = data.frete_padrao);
-            console.log("🚚 Frete nacional fixado em:", data.frete_padrao);
-        }
-
-        // 2. Carregar Cupons
-        if (data.cupom_destaque && data.cupom_destaque.ativo) {
-            COUPONS[data.cupom_destaque.codigo.toUpperCase()] = data.cupom_destaque.desconto / 100;
-        }
-        if (data.cupons_extras) {
-            data.cupons_extras.forEach(c => {
-                COUPONS[c.code.toUpperCase()] = c.discount_type === 'percent' ? c.discount_value / 100 : c.discount_value;
-            });
-        }
-
-        // 3. Cores Dinâmicas
-        if (data.cores && data.cores.length > 0) {
-            const container = document.querySelector('.color-dots-container');
-            if (container) {
-                container.innerHTML = ''; // Limpa as cores fixas
-                data.cores.forEach((color, idx) => {
-                    const dot = document.createElement('div');
-                    dot.className = `color-dot ${idx === 0 ? 'selected' : ''}`;
-                    dot.style.backgroundColor = color.toLowerCase();
-                    dot.dataset.color = color;
-                    if (idx === 0) state.selectedColor = color;
-                    container.appendChild(dot);
-                });
-                // Re-bind click events
-                initUIColors();
-            }
-        }
-
-        // 4. Estoque
-        if (data.estoque <= 0) {
-            const btn = document.getElementById('add-to-cart');
-            if (btn) {
-                btn.innerText = "ESGOTADO";
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-            }
-        }
-
-    } catch (e) {
-        console.warn("⚠️ Não foi possível puxar dados da API (usando fallback).", e);
-    }
-}
-
-function initUIColors() {
-    const dots = document.querySelectorAll('.color-dot');
-    dots.forEach(dot => {
-        dot.addEventListener('click', () => {
-            dots.forEach(d => d.classList.remove('selected'));
-            dot.classList.add('selected');
-            state.selectedColor = dot.dataset.color || 'Preto';
-            const colorText = document.getElementById('selected-color-text');
-            if (colorText) colorText.innerText = `Cor selecionada: ${state.selectedColor}`;
-        });
-    });
-}
-
 // --- Initialization ---
-const initCheckout = async () => {
+const initCheckout = () => {
     console.log("Spike: Initializing Checkout...");
-    await fetchStoreData(); // Puxa valores da API antes de renderizar tudo!
     initUI();
     updateCartUI();
     restoreStep();
@@ -159,8 +79,17 @@ if (document.readyState === 'loading') {
 }
 
 function initUI() {
-    // 1. Color dots inicial (as cores vindas da API vão sobrescrever isso se existirem)
-    initUIColors();
+    // 1. Color dots
+    const dots = document.querySelectorAll('.color-dot');
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            dots.forEach(d => d.classList.remove('selected'));
+            dot.classList.add('selected');
+            state.selectedColor = dot.dataset.color || 'Preto';
+            const colorText = document.getElementById('selected-color-text');
+            if (colorText) colorText.innerText = `Cor selecionada: ${state.selectedColor}`;
+        });
+    });
 
     // 2. Qty control
     const safeBind = (id, event, callback) => {
@@ -378,7 +307,7 @@ async function handleCEP() {
     if (cep.length !== 8) return;
 
     try {
-        const response = await fetch(`s://viacep.com.br/ws/${cep}/json/`);
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await response.json();
         if (data.erro) {
             showModal('Erro', 'CEP não encontrado.');
@@ -610,46 +539,120 @@ function runPixCheckout() {
 }
 
 async function generatePayment() {
-    console.log("Spike: Início da geração de pedido...");
-    const btn = document.getElementById('gen-payment');
-    if (btn) btn.disabled = true;
+    if (typeof PAYMENT_METHOD !== 'undefined' && PAYMENT_METHOD === 'PIX') {
+        runPixCheckout();
+        return;
+    }
+    const subtotal = state.cart.reduce((a, b) => a + ((b.price || PRODUCT_PRICE) * (b.quantity || 1)), 0);
+    // Include freight in discount calculation
+    const discountableAmount = subtotal + state.freight;
+    const discount = (state.appliedCoupon ? discountableAmount * state.appliedCoupon.value : 0).toFixed(2);
 
-    try {
-        const payload = {
-            site_slug: 'spike',
-            product_id: 1, // ID do produto no painel
+    // Construct Mercado Pago Items
+    const mpItems = state.cart.map(item => ({
+        title: `Óculos Spike - ${item.color}`,
+        unit_price: Number(item.price),
+        quantity: Number(item.quantity),
+        currency_id: 'BRL'
+    }));
+
+    // Add Shipping
+    let finalFreight = state.freight;
+    if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) {
+        finalFreight = 0;
+    }
+
+    if (finalFreight > 0) {
+        mpItems.push({
+            title: 'Frete',
+            unit_price: Number(finalFreight),
+            quantity: 1,
+            currency_id: 'BRL'
+        });
+    }
+
+    // Add Discount
+    if (discount > 0) {
+        mpItems.push({
+            title: `Desconto Cupom (${state.appliedCoupon.code})`,
+            unit_price: -Number(discount),
+            quantity: 1,
+            currency_id: 'BRL'
+        });
+    }
+
+    const preference = {
+        items: mpItems,
+        payer: {
             name: state.userData.nome,
             email: state.userData.email,
-            cpf: state.userData.cpf,
-            color: state.selectedColor,
-            total: calculateFinalPrice(PRODUCT_PRICE, state.quantity, state.freight, state.appliedCoupon ? COUPONS[state.appliedCoupon] : 0),
+            identification: {
+                type: 'CPF',
+                number: state.userData.cpf.replace(/\D/g, '')
+            },
             address: {
-                rua: state.userData.rua,
-                numero: state.userData.numero,
-                cep: state.userData.cep,
-                uf: state.userData.uf
+                street_name: state.userData.rua,
+                street_number: Number(state.userData.numero) || 0,
+                zip_code: state.userData.cep.replace(/\D/g, '')
             }
-        };
+        },
+        back_urls: {
+            success: window.location.href.split('checkout.html')[0] + 'index.html?status=success',
+            failure: window.location.href,
+            pending: window.location.href
+        },
+        auto_return: 'approved',
+    };
 
-        const response = await fetch('http://localhost/Checkout/public/create_order.php', {
+    console.log("Spike: Generating Payment (Frontend Only)...", preference);
+    showModal('Redirecionando', 'Estamos preparando seu checkout seguro de pagamento...');
+
+    try {
+        const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            headers: {
+                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(preference)
         });
 
-        const resData = await response.json();
-
-        if (resData.success && resData.payment_url) {
-            console.log("Pedido criado! Link:", resData.payment_url);
-            window.location.href = resData.payment_url;
-        } else {
-            throw new Error(resData.error || "Erro ao criar pedido no servidor.");
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.message || 'Falha ao conectar com o serviço de pagamento');
         }
 
-    } catch (e) {
-        console.error("Spike Checkout Error:", e);
-        alert("Erro ao processar: " + e.message);
-        if (btn) btn.disabled = false;
+        const data = await response.json();
+
+        if (data.init_point) {
+            state.paymentGenerated = true;
+            closeModal('generic-modal');
+
+            // Open immediately to avoid popup blocker
+            const payWin = window.open(data.init_point, '_blank');
+
+            if (!payWin || payWin.closed || typeof payWin.closed === 'undefined') {
+                // Fallback if blocked
+                showModal('Atenção', 'O bloqueador de popups impediu a abertura automática. Clique no botão abaixo para ir ao pagamento.');
+                const okBtn = document.getElementById('modal-ok');
+                if (okBtn) {
+                    okBtn.innerText = 'Ir para o Pagamento';
+                    okBtn.onclick = () => {
+                        window.open(data.init_point, '_blank');
+                        showPaidButton();
+                    };
+                }
+            } else {
+                showModal('Sucesso', 'O checkout abriu em uma nova aba. Conclua o pagamento por lá!');
+                showPaidButton();
+            }
+        } else {
+            throw new Error('Link de pagamento não recebido');
+        }
+
+    } catch (error) {
+        console.error("Spike: MP Error", error);
+        showModal('Erro no Checkout', 'Não conseguimos gerar o link de pagamento. Verifique sua conexão ou tente novamente mais tarde.');
     }
 }
 
