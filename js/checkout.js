@@ -2,7 +2,7 @@
  * Spike Season Checkout Logic - Robust Version
  */
 
-const PRODUCT_PRICE = 109.99;
+const PRODUCT_PRICE = 109.90;
 const SHIPPING_VALUES = {
     'SP': 15, 'RJ': 15, 'MG': 15, 'ES': 15,
     'PR': 18, 'SC': 18, 'RS': 18,
@@ -21,6 +21,18 @@ const COUPONS = {
 
 // Security Note: Token is used directly for stability in file:// environment.
 const MP_ACCESS_TOKEN = CONFIG.MERCADOPAGO_ACCESS_TOKEN;
+
+function formatBRL(v) {
+    try { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0)); } catch { return `R$ ${Number(v||0).toFixed(2).replace('.', ',')}`; }
+}
+
+function calculateFinalPrice(basePrice, quantity, shippingCost, couponDiscountPercent, couponDiscountValue) {
+    const subtotal = (Number(basePrice) * Number(quantity));
+    const percent = subtotal * Number(couponDiscountPercent || 0);
+    const value = Number(couponDiscountValue || 0);
+    const total = subtotal + Number(shippingCost || 0) - (percent + value);
+    return Number(total.toFixed(2));
+}
 
 // Defensive state initialization
 let initialCart = [];
@@ -205,7 +217,7 @@ function updateCartUI() {
                 <span style="font-weight: 600;">${item.color}</span> x${qty}
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="color: var(--primary-purple); font-weight: bold;">R$ ${subtotal.toFixed(2)}</span>
+                <span style="color: var(--primary-purple); font-weight: bold;">${formatBRL(subtotal)}</span>
                 <button class="remove-item-btn" data-index="${index}" style="background: none; border: none; color: #ff4444; font-weight: bold; font-size: 1.2rem; cursor: pointer;">&times;</button>
             </div>
         `;
@@ -220,7 +232,7 @@ function updateCartUI() {
         });
     });
 
-    if (totalEl) totalEl.innerText = `R$ ${total.toFixed(2)}`;
+    if (totalEl) totalEl.innerText = `${formatBRL(total)}`;
     if (nextBtn) nextBtn.disabled = state.cart.length === 0;
 
     // Reset payment state if cart is modified
@@ -383,7 +395,7 @@ function updateSummary() {
 
         const div = document.createElement('div');
         div.style = 'display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--gray-text);';
-        div.innerHTML = `<span>${item.color} x${qty}</span> <span>R$ ${itemSubtotal.toFixed(2)}</span>`;
+        div.innerHTML = `<span>${item.color} x${qty}</span> <span>${formatBRL(itemSubtotal)}</span>`;
         summaryList.appendChild(div);
     });
 
@@ -401,23 +413,136 @@ function updateSummary() {
         if (el) el.innerText = val;
     };
 
-    setDisplay('summary-subtotal', `R$ ${subtotal.toFixed(2)}`);
-    setDisplay('summary-freight', `R$ ${freightVal.toFixed(2)}`);
+    setDisplay('summary-subtotal', `${formatBRL(subtotal)}`);
+    setDisplay('summary-freight', `${formatBRL(freightVal)}`);
 
     const cRow = document.getElementById('coupon-row');
     if (cRow) {
         if (discount > 0) {
             cRow.style.display = 'flex';
-            setDisplay('summary-discount', `- R$ ${discount.toFixed(2)}`);
+            setDisplay('summary-discount', `- ${formatBRL(discount)}`);
         } else {
             cRow.style.display = 'none';
         }
     }
 
-    setDisplay('summary-total', `R$ ${total.toFixed(2)}`);
+    setDisplay('summary-total', `${formatBRL(total)}`);
+}
+
+function buildEMV(id, value) {
+    const len = String(value.length).padStart(2, '0');
+    return `${id}${len}${value}`;
+}
+
+function crc16(str) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+            if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+            else crc = (crc << 1);
+            crc &= 0xFFFF;
+        }
+    }
+    return (crc >>> 0).toString(16).toUpperCase().padStart(4, '0');
+}
+
+function generatePixPayload(key, name, city, amount, reference) {
+    const gui = buildEMV('00', 'BR.GOV.BCB.PIX');
+    const keyField = buildEMV('01', key);
+    const accInfo = buildEMV('26', gui + keyField);
+    const payloadFormat = buildEMV('00', '01');
+    const merchantCat = buildEMV('52', '0000');
+    const currency = buildEMV('53', '986');
+    const amountField = amount > 0 ? buildEMV('54', String(amount.toFixed(2))) : '';
+    const country = buildEMV('58', 'BR');
+    const nameField = buildEMV('59', String(name).slice(0, 25));
+    const cityField = buildEMV('60', String(city).slice(0, 15));
+    const ref = buildEMV('05', reference || 'ORDER');
+    const addData = buildEMV('62', ref);
+    const noCrc = payloadFormat + accInfo + merchantCat + currency + amountField + country + nameField + cityField + addData + '6304';
+    const crc = crc16(noCrc);
+    return noCrc + crc;
+}
+
+function runPixCheckout() {
+    const qty = state.cart.reduce((acc, it) => acc + (it.quantity || 1), 0);
+    let freight = state.freight;
+    if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) freight = 0;
+    const percent = state.appliedCoupon ? state.appliedCoupon.value : 0;
+    const final = calculateFinalPrice(PRODUCT_PRICE, qty, freight, percent, 0);
+    const container = document.getElementById('pix-container');
+    const sum = document.getElementById('pix-summary');
+    const codeEl = document.getElementById('pix-code');
+    const keyEl = document.getElementById('pix-key');
+    const timerEl = document.getElementById('pix-timer');
+    const copyBtn = document.getElementById('pix-copy');
+    const regenBtn = document.getElementById('pix-regenerate');
+    const paidBtn = document.getElementById('pix-paid');
+    if (container) container.classList.remove('hidden');
+    const color = state.cart[0]?.color || state.selectedColor || 'Preto';
+    if (sum) sum.innerHTML = `Produto: SPIKE GLASSES<br>Cor: ${color}<br>Quantidade: ${qty}<br>Frete: ${formatBRL(freight)}<br>Cupom: ${state.appliedCoupon ? state.appliedCoupon.code : 'Nenhum'}<br>Total: <strong>${formatBRL(final)}</strong>`;
+    const reference = String(Date.now());
+    const payload = generatePixPayload(PIX_KEY, STORE_NAME, STORE_CITY, final, reference);
+    if (codeEl) codeEl.innerText = payload;
+    if (keyEl) keyEl.innerText = PIX_KEY;
+    if (copyBtn) {
+        copyBtn.onclick = async () => {
+            try { await navigator.clipboard.writeText(payload); showModal('Copiado', 'Código copiado!'); } catch {}
+        };
+    }
+    const gBtn = document.getElementById('gen-payment');
+    const mpPaid = document.getElementById('paid-btn');
+    if (gBtn) gBtn.classList.add('hidden');
+    if (mpPaid) mpPaid.classList.add('hidden');
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+    function tick() {
+        const left = Math.max(0, expiresAt - Date.now());
+        const m = Math.floor(left / 60000).toString().padStart(2, '0');
+        const s = Math.floor((left % 60000) / 1000).toString().padStart(2, '0');
+        if (timerEl) timerEl.innerText = `Este código PIX expira em ${m}:${s}`;
+        if (left <= 0) {
+            clearInterval(t);
+            if (regenBtn) regenBtn.style.display = 'inline-block';
+        }
+    }
+    const t = setInterval(tick, 1000); tick();
+    if (regenBtn) {
+        regenBtn.onclick = () => {
+            regenBtn.style.display = 'none';
+            runPixCheckout();
+        };
+    }
+    if (paidBtn) {
+        paidBtn.onclick = () => {
+            showConfirmModal('Confirmação de Pagamento', 'Você confirma que realizou o pagamento via PIX?', () => {
+                const order = {
+                    orderID: reference,
+                    product: 'SPIKE GLASSES',
+                    color: color,
+                    quantity: qty,
+                    shipping: freight,
+                    coupon: state.appliedCoupon ? state.appliedCoupon.code : null,
+                    finalPrice: final,
+                    paymentMethod: 'PIX',
+                    status: 'pending_payment_verification'
+                };
+                try {
+                    const list = JSON.parse(localStorage.getItem('spikeOrders') || '[]');
+                    list.push(order);
+                    localStorage.setItem('spikeOrders', JSON.stringify(list));
+                } catch {}
+                sendToFormspree();
+            });
+        };
+    }
 }
 
 async function generatePayment() {
+    if (typeof PAYMENT_METHOD !== 'undefined' && PAYMENT_METHOD === 'PIX') {
+        runPixCheckout();
+        return;
+    }
     const subtotal = state.cart.reduce((a, b) => a + ((b.price || PRODUCT_PRICE) * (b.quantity || 1)), 0);
     // Include freight in discount calculation
     const discountableAmount = subtotal + state.freight;
@@ -480,7 +605,7 @@ async function generatePayment() {
     };
 
     console.log("Spike: Generating Payment (Frontend Only)...", preference);
-    showModal('Redirecionando', 'Estamos preparando seu checkout seguro no Mercado Pago...');
+    showModal('Redirecionando', 'Estamos preparando seu checkout seguro de pagamento...');
 
     try {
         const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
@@ -494,7 +619,7 @@ async function generatePayment() {
 
         if (!response.ok) {
             const err = await response.json();
-            throw new Error(err.message || 'Falha ao conectar com Mercado Pago');
+            throw new Error(err.message || 'Falha ao conectar com o serviço de pagamento');
         }
 
         const data = await response.json();
@@ -541,7 +666,7 @@ function showPaidButton() {
 }
 
 function handlePaidConfirmation() {
-    showConfirmModal('Confirmação de Pagamento', 'Você confirma que realizou o pagamento via Mercado Pago?', () => {
+    showConfirmModal('Confirmação de Pagamento', 'Você confirma que realizou o pagamento?', () => {
         sendToFormspree();
     });
 }
