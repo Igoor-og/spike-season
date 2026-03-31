@@ -75,13 +75,12 @@ body::after {
     width: 100%;
     height: 80px;
     background: #000;
-    border-bottom: 1px solid var(--gray-border);
     z-index: 1000;
     transition: var(--transition);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 5%;
+    padding: 0 8%;
 }
 
 .header.scrolled {
@@ -119,8 +118,8 @@ body::after {
 
 /* Hamburger */
 .hamburger {
-    width: 30px;
-    height: 20px;
+    width: 28px;
+    height: 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -138,7 +137,7 @@ body::after {
 }
 
 .hamburger.active span:nth-child(1) {
-    transform: translateY(9px) rotate(45deg);
+    transform: translateY(8px) rotate(45deg);
 }
 
 .hamburger.active span:nth-child(2) {
@@ -146,7 +145,7 @@ body::after {
 }
 
 .hamburger.active span:nth-child(3) {
-    transform: translateY(-9px) rotate(-45deg);
+    transform: translateY(-8px) rotate(-45deg);
 }
 
 /* Menu Overlay */
@@ -163,6 +162,13 @@ body::after {
     align-items: center;
     z-index: 2000;
     transition: var(--transition);
+}
+
+.menu-overlay nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
 }
 
 .menu-overlay.active {
@@ -185,15 +191,15 @@ body::after {
 }
 
 .menu-item {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.5rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--white);
     text-decoration: none;
-    margin: 20px 0;
     transition: var(--transition);
     text-transform: uppercase;
-    letter-spacing: 5px;
+    letter-spacing: 4px;
+    padding: 10px;
 }
 
 .menu-item:hover {
@@ -318,15 +324,24 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: var(--transition);
 }
 
 .swiper-slide img {
-    height: 500px;
-    width: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
     border-radius: var(--radius);
-    filter: grayscale(0.5);
+    filter: grayscale(0.2);
     transition: var(--transition);
+    max-height: 80vh; /* Responsive height limit */
+}
+
+@media (min-width: 1024px) {
+    .swiper-slide img {
+        max-height: 650px; /* Refined desktop height */
+    }
 }
 
 .swiper-slide-active img {

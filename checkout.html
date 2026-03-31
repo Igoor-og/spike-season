@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPIKE SEASON 16*29</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
 </head>
 
 <body class="checkout-page">
@@ -218,30 +219,11 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
-                    <button class="btn btn-large" id="gen-payment">Gerar Pagamento</button>
+                <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
+                    <button class="btn btn-large" id="gen-payment">Gerar pagamento Mercado Pago</button>
                     <button class="btn hidden" id="paid-btn" style="background: #28a745;">Já fiz o pagamento</button>
                     <button class="btn" style="background: var(--gray-border);" id="back-to-step-2">Editar
                         Dados</button>
-                </div>
-
-                <div id="pix-container" class="hidden" style="margin-top: 30px;">
-                    <h3 class="brand-font" style="text-align: center; margin-bottom: 20px;">Conclua seu pagamento via PIX</h3>
-                    <div id="pix-summary" style="margin-bottom: 15px; color: var(--gray-text);"></div>
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; word-break: break-all;">
-                        <div style="font-size: 0.9rem; color: var(--gray-text); margin-bottom: 8px;">PIX Copia e Cola</div>
-                        <div id="pix-code" style="font-family: monospace; font-size: 0.85rem;"></div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center;">
-                        <button class="btn" id="pix-copy">Copiar código PIX</button>
-                        <button class="btn" id="pix-regenerate" style="display:none; background: #ff7a00;">Regerar Código</button>
-                    </div>
-                    <div style="margin-top: 15px; color: var(--gray-text);" id="pix-timer">Este código PIX expira em 15:00</div>
-                    <div style="margin-top: 15px; color: var(--gray-text);">Chave PIX: <span id="pix-key"></span></div>
-
-                    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
-                        <button class="btn" id="pix-paid" style="background: #28a745;">Já paguei</button>
-                    </div>
                 </div>
             </div>
         </section>
@@ -270,8 +252,6 @@
     </div>
 
     <script src="config.js"></script>
-    <script src="payment-config.js"></script>
-    <script src="pix-config.js"></script>
     <script src="js/checkout.js"></script>
 </body>
 

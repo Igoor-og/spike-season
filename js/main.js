@@ -65,7 +65,8 @@ const initMain = () => {
         new Swiper('.swiper-container', {
             slidesPerView: 'auto',
             centeredSlides: true,
-            spaceBetween: 40,
+            centeredSlidesBounds: true,
+            slideToClickedSlide: true,
             loop: true,
             autoplay: {
                 delay: 3000,
@@ -80,6 +81,28 @@ const initMain = () => {
                 depth: 100,
                 modifier: 2.5,
                 slideShadows: false,
+            },
+            breakpoints: {
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                    coverflowEffect: {
+                        rotate: 0,
+                        stretch: 0,
+                        depth: 0,
+                        modifier: 1,
+                    }
+                },
+                0: {
+                    slidesPerView: 1.2,
+                    spaceBetween: 20,
+                    coverflowEffect: {
+                        rotate: 0,
+                        stretch: 0,
+                        depth: 100,
+                        modifier: 2.5,
+                    }
+                }
             }
         });
     }
