@@ -718,6 +718,15 @@ async function sendToFormspree() {
             localStorage.removeItem('spikeStep');
             localStorage.removeItem('spikePaymentGenerated');
 
+            // Envia e-mail de confirmação via EmailJS
+            try {
+                await emailjs.send("service_0oibu1g", "template_qskgzio", {
+                    to_email: state.userData.email,
+                });
+            } catch (emailErr) {
+                console.warn("Spike: EmailJS falhou (pedido já confirmado):", emailErr);
+            }
+
             // Show Success Modal with Production Notice
             showModal('Pedido Confirmado!',
                 '<strong>Seu pedido foi recebido com sucesso!</strong><br><br>' +
