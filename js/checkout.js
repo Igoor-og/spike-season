@@ -720,7 +720,7 @@ async function sendToFormspree() {
 
             // Envia e-mail de confirmação via EmailJS
             try {
-                await emailjs.send("service_0oibu1g", "template_qskgzio", {
+                await emailjs.send("service_0oibu1g", "template_x19kk6a", {
                     to_email: state.userData.email,
                 });
             } catch (emailErr) {
