@@ -705,6 +705,19 @@ async function sendToFormspree() {
         total_pago: totalVal
     };
 
+    // 1️⃣ Envia o e-mail de confirmação via EmailJS PRIMEIRO (Fica blindado contra erros do Formspree)
+    try {
+        await emailjs.send("service_0oibu1g", "template_x19kk6a", {
+            to_email: state.userData.email, // Vai para o email que a pessoa digitou no checkout
+            cliente_nome: state.userData.nome,
+            total_pago: totalVal
+        });
+    } catch (emailErr) {
+        alert("Erro EmailJS: " + (emailErr.text || JSON.stringify(emailErr)));
+        console.warn("Spike: EmailJS falhou:", emailErr);
+    }
+
+    // 2️⃣ Envia os dados silenciosamente para você no Formspree
     try {
         const response = await fetch(CONFIG.FORMSPREE_ENDPOINT, {
             method: 'POST',
@@ -717,16 +730,6 @@ async function sendToFormspree() {
             localStorage.removeItem('spikeUserData');
             localStorage.removeItem('spikeStep');
             localStorage.removeItem('spikePaymentGenerated');
-
-            // Envia e-mail de confirmação via EmailJS
-            try {
-                await emailjs.send("service_0oibu1g", "template_x19kk6a", {
-                    to_email: state.userData.email,
-                });
-            } catch (emailErr) {
-                alert("Erro EmailJS: " + (emailErr.text || JSON.stringify(emailErr)));
-                console.warn("Spike: EmailJS falhou (pedido já confirmado):", emailErr);
-            }
 
             // Show Success Modal with Production Notice
             showModal('Pedido Confirmado!',
