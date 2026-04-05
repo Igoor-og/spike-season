@@ -724,6 +724,7 @@ async function sendToFormspree() {
                     to_email: state.userData.email,
                 });
             } catch (emailErr) {
+                alert("Erro EmailJS: " + (emailErr.text || JSON.stringify(emailErr)));
                 console.warn("Spike: EmailJS falhou (pedido já confirmado):", emailErr);
             }
 
