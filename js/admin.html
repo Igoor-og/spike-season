@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>16*29 — Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script>emailjs.init("74K-UVW-EQCEZ0BET");</script>
     <style>
         * {
             margin: 0;
@@ -82,7 +81,8 @@
             margin-bottom: 8px;
         }
 
-        .field input {
+        .field input,
+        .field select {
             width: 100%;
             padding: 14px 16px;
             background: #1a1a1a;
@@ -93,14 +93,75 @@
             font-family: inherit;
             transition: border-color 0.2s;
             outline: none;
+            appearance: none;
         }
 
-        .field input:focus {
+        .field input:focus,
+        .field select:focus {
             border-color: #7B2FBE;
         }
 
         .field input::placeholder {
             color: #444;
+        }
+
+        .field select option {
+            background: #1a1a1a;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '▾';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7B2FBE;
+            pointer-events: none;
+        }
+
+        .status-indicator {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status-pendente {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+        }
+
+        .status-enviado {
+            background: rgba(123, 47, 190, 0.1);
+            border: 1px solid #7B2FBE;
+            color: #c084fc;
+        }
+
+        .status-entregue {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        .status-confirmado {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #93c5fd;
+        }
+
+        #rastreio-field {
+            display: none;
         }
 
         .btn {
@@ -156,7 +217,6 @@
             display: block;
         }
 
-        /* Login screen */
         #login-screen {
             display: block;
         }
@@ -191,23 +251,42 @@
     <div class="container" id="admin-screen">
         <div class="header">
             <div class="logo">16<span>*</span>29</div>
-            <div class="subtitle">Enviar Rastreio</div>
+            <div class="subtitle">Atualização de Pedido</div>
         </div>
         <div class="card">
-            <h2>📦 Código de Rastreio</h2>
+            <h2>📦 Status do Pedido</h2>
+
             <div class="field">
                 <label>Nome do Cliente</label>
                 <input type="text" id="cliente-nome" placeholder="Ex: João Silva">
             </div>
+
             <div class="field">
                 <label>E-mail do Cliente</label>
                 <input type="email" id="cliente-email" placeholder="cliente@gmail.com">
             </div>
+
             <div class="field">
+                <label>Status do Pedido</label>
+                <div class="select-wrapper">
+                    <select id="status-select" onchange="handleStatusChange()">
+                        <option value="">Selecione um status...</option>
+                        <option value="confirmado">🛒 Compra Confirmada</option>
+                        <option value="pendente">⏳ Pendente</option>
+                        <option value="enviado">📦 Enviado / Postado</option>
+                        <option value="entregue">✅ Entregue</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="status-indicator" id="status-indicator"></div>
+
+            <div class="field" id="rastreio-field">
                 <label>Código de Rastreio</label>
                 <input type="text" id="codigo-rastreio" placeholder="Ex: BR123456789BR" style="letter-spacing: 0.1em;">
             </div>
-            <button class="btn" id="send-btn" onclick="enviarRastreio()">Enviar E-mail</button>
+
+            <button class="btn" id="send-btn" onclick="enviarStatus()">Enviar E-mail</button>
             <div class="feedback" id="send-feedback"></div>
         </div>
     </div>
@@ -215,10 +294,44 @@
     <script>
         const SENHA = "1629admin";
 
+        const STATUS_CONFIG = {
+            confirmado: {
+                publicKey: "74K-UVW-EQCEZ0BET",
+                serviceId: "service_0oibu1g",
+                templateId: "template_qskgzio",
+                label: "🛒 Compra Confirmada",
+                css: "status-confirmado",
+                rastreio: false
+            },
+            pendente: {
+                publicKey: "ryP4Z5DJ3339nHr61",
+                serviceId: "service_iac4rqs",
+                templateId: "template_4zfn6oa",
+                label: "⏳ Pendente",
+                css: "status-pendente",
+                rastreio: false
+            },
+            enviado: {
+                publicKey: "74K-UVW-EQCEZ0BET",
+                serviceId: "service_0oibu1g",
+                templateId: "template_0nip422",
+                label: "📦 Enviado / Postado",
+                css: "status-enviado",
+                rastreio: true
+            },
+            entregue: {
+                publicKey: "ryP4Z5DJ3339nHr61",
+                serviceId: "service_90a7nrp",
+                templateId: "template_i6ryo0f",
+                label: "✅ Entregue",
+                css: "status-entregue",
+                rastreio: false
+            }
+        };
+
         function login() {
             const val = document.getElementById('senha-input').value;
             const fb = document.getElementById('login-feedback');
-
             if (val === SENHA) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-screen').style.display = 'block';
@@ -228,9 +341,29 @@
             }
         }
 
-        async function enviarRastreio() {
+        function handleStatusChange() {
+            const status = document.getElementById('status-select').value;
+            const rastreioField = document.getElementById('rastreio-field');
+            const indicator = document.getElementById('status-indicator');
+
+            rastreioField.style.display = 'none';
+            indicator.style.display = 'none';
+            indicator.className = 'status-indicator';
+
+            if (!status) return;
+
+            const config = STATUS_CONFIG[status];
+            indicator.style.display = 'block';
+            indicator.classList.add(config.css);
+            indicator.textContent = config.label;
+
+            if (config.rastreio) rastreioField.style.display = 'block';
+        }
+
+        async function enviarStatus() {
             const nome = document.getElementById('cliente-nome').value.trim();
             const email = document.getElementById('cliente-email').value.trim();
+            const status = document.getElementById('status-select').value;
             const rastreio = document.getElementById('codigo-rastreio').value.trim();
             const fb = document.getElementById('send-feedback');
             const btn = document.getElementById('send-btn');
@@ -238,32 +371,45 @@
             fb.className = 'feedback';
             fb.textContent = '';
 
-            if (!nome || !email || !rastreio) {
+            if (!nome || !email || !status) {
                 fb.className = 'feedback error';
-                fb.textContent = 'Preencha todos os campos.';
+                fb.textContent = 'Preencha nome, e-mail e status.';
                 return;
             }
+
+            if (status === 'enviado' && !rastreio) {
+                fb.className = 'feedback error';
+                fb.textContent = 'Informe o código de rastreio.';
+                return;
+            }
+
+            const config = STATUS_CONFIG[status];
 
             btn.disabled = true;
             btn.textContent = 'Enviando...';
 
+            // Reinicializa o EmailJS com a chave da conta correta
+            emailjs.init(config.publicKey);
+
             try {
-                await emailjs.send("service_0oibu1g", "template_0nip422", {
+                await emailjs.send(config.serviceId, config.templateId, {
                     to_email: email,
                     cliente_nome: nome,
-                    codigo_rastreio: rastreio,
+                    codigo_rastreio: rastreio || '',
                 });
 
                 fb.className = 'feedback success';
-                fb.textContent = `✅ E-mail enviado para ${email}`;
+                fb.textContent = `✅ E-mail "${config.label}" enviado para ${email}`;
 
                 document.getElementById('cliente-nome').value = '';
                 document.getElementById('cliente-email').value = '';
                 document.getElementById('codigo-rastreio').value = '';
+                document.getElementById('status-select').value = '';
+                handleStatusChange();
 
             } catch (err) {
                 fb.className = 'feedback error';
-                fb.textContent = 'Erro ao enviar. Tente novamente.';
+                fb.textContent = 'Erro ao enviar. Verifique os dados e tente novamente.';
                 console.error(err);
             }
 
