@@ -735,25 +735,31 @@ async function sendToFormspree() {
         total: totalVal
     };
 
-        // 1️⃣ Envia o e-mail de confirmação via EmailJS
-    try {
-        // Use a mesma Public Key que você já usa no admin.html
-        emailjs.init("SUA_MESMA_PUBLIC_KEY_DO_ADMIN"); 
+        // --- COPIE E SUBSTITUA NO CHECKOUT.JS ---
+try {
+    // Chave da conta onde está o template de Compra Confirmada
+    const PUBLIC_KEY_74K = "74K-UVW-EQCEZ0BET"; 
 
-        const emailParams = {
-            to_email: state.userData.email, // Importante: No template, o campo "To Email" deve ser {{to_email}}
-            codigo_pedido: codigoPedido    // É a única variável que seu HTML usa
-        };
+    const emailParams = {
+        to_email: state.userData.email,
+        codigo_pedido: codigoPedido
+    };
 
-        console.log("Tentando enviar confirmação para:", state.userData.email);
+    console.log("Enviando confirmação via conta 74K...");
 
-        await emailjs.send("service_0oibu1g", "template_x19kk6a", emailParams);
-        
-        console.log("E-mail enviado com sucesso!");
-    } catch (emailErr) {
-        // Se o e-mail falhar, o código abaixo continua para não perder a venda
-        console.error("Erro no EmailJS:", emailErr);
-    }
+    // Passar a chave como 4º parâmetro resolve o erro de "User ID required"
+    await emailjs.send(
+        "service_0oibu1g", 
+        "template_x19kk6a", 
+        emailParams, 
+        PUBLIC_KEY_74K 
+    );
+    
+    console.log("E-mail enviado com sucesso!");
+} catch (emailErr) {
+    console.error("Erro no EmailJS:", emailErr);
+}
+// --- FIM DO BLOCO ---
 
     // 2️⃣ Envia os dados silenciosamente para você no Formspree
     try {
