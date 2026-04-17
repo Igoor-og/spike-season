@@ -627,7 +627,6 @@
     ind.innerHTML = c.label;
     if (c.rastreio) rf.style.display = 'block';
   }
-
   async function enviarStatus() {
     const nome    = document.getElementById('cliente-nome').value.trim();
     const email   = document.getElementById('cliente-email').value.trim();
@@ -635,6 +634,9 @@
     const rastreio = document.getElementById('codigo-rastreio').value.trim();
     const fb  = document.getElementById('send-feedback');
     const btn = document.getElementById('send-btn');
+    
+    // Tenta pegar o código do pedido que você buscou antes
+    const codigoPedido = document.getElementById('busca-codigo').value.trim().toUpperCase();
 
     fb.className = 'feedback'; fb.textContent = '';
 
@@ -642,21 +644,38 @@
     if (status === 'enviado' && !rastreio) { fb.className = 'feedback error'; fb.textContent = 'Informe o código de rastreio.'; return; }
 
     const c = STATUS_CONFIG[status];
-    btn.disabled = true; btn.textContent = 'Enviando...';
-    emailjs.init(c.publicKey);
-
+    btn.disabled = true; btn.textContent = 'Processando...';
+    
     try {
+      // 1. Envia o E-mail
+      emailjs.init(c.publicKey);
       await emailjs.send(c.serviceId, c.templateId, { to_email: email, cliente_nome: nome, codigo_rastreio: rastreio || '' });
+
+      // 2. ATUALIZA A PLANILHA (O que estava faltando)
+      // Mapeia o valor do select para o texto que vai na planilha
+      const statusFormatado = status.charAt(0).toUpperCase() + status.slice(1); // vira 'Enviado', 'Pendente', etc
+      
+      if (codigoPedido) {
+        const updateUrl = `${SHEETS_URL}?acao=update&codigo=${codigoPedido}&status=${statusFormatado}`;
+        await fetch(updateUrl, { mode: 'no-cors' }); // no-cors para evitar erro de trava do Google
+      }
+
       fb.className = 'feedback success';
-      fb.innerHTML = `<i class="ph ph-check-circle"></i> E-mail enviado para ${email}`;
+      fb.innerHTML = `<i class="ph ph-check-circle"></i> E-mail enviado e Planilha atualizada!`;
+      
+      // Limpa os campos
       document.getElementById('cliente-nome').value = '';
       document.getElementById('cliente-email').value = '';
       document.getElementById('codigo-rastreio').value = '';
       document.getElementById('status-select').value = '';
       handleStatusChange();
+      
+      // Recarrega os dados para atualizar os números no topo
+      setTimeout(carregarTudo, 2000);
+
     } catch (err) {
       fb.className = 'feedback error';
-      fb.textContent = 'Erro ao enviar. Tente novamente.';
+      fb.textContent = 'Erro ao processar. Tente novamente.';
       console.error(err);
     }
     btn.disabled = false; btn.textContent = 'Enviar E-mail';
