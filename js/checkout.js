@@ -671,6 +671,13 @@ function handlePaidConfirmation() {
     });
 }
 
+function gerarCodigoPedido() {
+    const ano = new Date().getFullYear();
+    const seq = (parseInt(localStorage.getItem('spikeOrderSeq') || '0') + 1);
+    localStorage.setItem('spikeOrderSeq', seq);
+    return `SS-${ano}-${String(seq).padStart(4, '0')}`;
+}
+
 async function sendToFormspree() {
     showModal('Enviando', 'Finalizando seu pedido...');
     const totalVal = document.getElementById('summary-total')?.innerText || "0,00";
@@ -678,14 +685,17 @@ async function sendToFormspree() {
     const freightVal = document.getElementById('summary-freight')?.innerText || "0,00";
     const discountVal = document.getElementById('summary-discount')?.innerText || "0,00";
 
+    const codigoPedido = gerarCodigoPedido();
+
     // Organize items for a clean email
     const itemsDescription = state.cart.map(item =>
         `- ${item.color} (Qtd: ${item.quantity}) - R$ ${(item.quantity * (item.price || PRODUCT_PRICE)).toFixed(2)}`
     ).join('\n');
 
     const formData = {
-        subject: 'Novo Pedido - SKISEASON',
+        subject: `Novo Pedido ${codigoPedido} - SKISEASON`,
         _message: `NOVO PEDIDO RECEBIDO:\n\n` +
+            `Código do Pedido: ${codigoPedido}\n` +
             `Cliente: ${state.userData.nome}\n` +
             `CPF: ${state.userData.cpf}\n` +
             `E-mail: ${state.userData.email}\n` +
@@ -702,15 +712,36 @@ async function sendToFormspree() {
             `Cupom Usado: ${state.appliedCoupon ? state.appliedCoupon.code : 'Nenhum'}`,
         cliente_nome: state.userData.nome,
         cliente_email: state.userData.email,
-        total_pago: totalVal
+        total_pago: totalVal,
+        codigo_pedido: codigoPedido
+    };
+
+    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwTMyWKVyeSoh0YbQupIniFom7PTj0LeEhGxTRyePiTBbBW__LfWuNwPRp_5ng7og2wTg/exec';
+
+    const sheetsData = {
+        codigo_pedido: codigoPedido,
+        nome: state.userData.nome,
+        email: state.userData.email,
+        telefone: state.userData.telefone,
+        cpf: state.userData.cpf,
+        rua: state.userData.rua,
+        numero: state.userData.numero,
+        complemento: state.userData.complemento || '',
+        bairro: state.userData.bairro,
+        cidade: state.userData.cidade,
+        estado: state.userData.estado,
+        cep: state.userData.cep,
+        produtos: state.cart.map(i => `${i.color} x${i.quantity}`).join(', '),
+        total: totalVal
     };
 
     // 1️⃣ Envia o e-mail de confirmação via EmailJS PRIMEIRO (Fica blindado contra erros do Formspree)
     try {
         await emailjs.send("service_0oibu1g", "template_x19kk6a", {
-            to_email: state.userData.email, // Vai para o email que a pessoa digitou no checkout
+            to_email: state.userData.email,
             cliente_nome: state.userData.nome,
-            total_pago: totalVal
+            total_pago: totalVal,
+            codigo_pedido: codigoPedido
         });
     } catch (emailErr) {
         alert("Erro EmailJS: " + (emailErr.text || JSON.stringify(emailErr)));
@@ -731,9 +762,21 @@ async function sendToFormspree() {
             localStorage.removeItem('spikeStep');
             localStorage.removeItem('spikePaymentGenerated');
 
-            // Show Success Modal with Production Notice
+            // Salva pedido no Google Sheets
+            try {
+                await fetch(SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sheetsData)
+                });
+            } catch (sheetErr) {
+                console.warn('Spike: Google Sheets falhou:', sheetErr);
+            }
+
             showModal('Pedido Confirmado!',
-                '<strong>Seu pedido foi recebido com sucesso!</strong><br><br>' +
+                `<strong>Seu pedido foi recebido com sucesso!</strong><br><br>` +
+                `🧾 Código do pedido: <strong style="color: var(--primary-purple);">${codigoPedido}</strong><br><br>` +
                 '⚠ AVISO DE PRODUÇÃO: Devido ao processo artesanal premium, os óculos levam aproximadamente 30 dias para serem produzidos + o tempo de envio dos correios.<br><br>' +
                 'Você receberá um e-mail com o código de rastreio assim que seu pedido for postado. Qualquer dúvida, entre em contato com nosso suporte no menu superior.');
 
