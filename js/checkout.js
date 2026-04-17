@@ -737,15 +737,21 @@ async function sendToFormspree() {
 
     // 1️⃣ Envia o e-mail de confirmação via EmailJS PRIMEIRO (Fica blindado contra erros do Formspree)
     try {
+        // 1️⃣ Envia o e-mail de confirmação via EmailJS
+    try {
+        // Inicializa com sua Chave Pública (pegue no painel do EmailJS)
+        emailjs.init("74K-UVW-EQCEZ0BET"); 
+
         await emailjs.send("service_0oibu1g", "template_x19kk6a", {
-            to_email: state.userData.email,
-            cliente_nome: state.userData.nome,
-            total_pago: totalVal,
-            codigo_pedido: codigoPedido
+            to_email: state.userData.email,     // No EmailJS, use {{to_email}}
+            cliente_nome: state.userData.nome, // No EmailJS, use {{cliente_nome}}
+            total_pago: totalVal,              // No EmailJS, use {{total_pago}}
+            codigo_pedido: codigoPedido        // No EmailJS, use {{codigo_pedido}}
         });
+        console.log("EmailJS: Sucesso!");
     } catch (emailErr) {
-        alert("Erro EmailJS: " + (emailErr.text || JSON.stringify(emailErr)));
-        console.warn("Spike: EmailJS falhou:", emailErr);
+        console.error("EmailJS Erro:", emailErr);
+        // Não trava o processo se o email falhar
     }
 
     // 2️⃣ Envia os dados silenciosamente para você no Formspree
