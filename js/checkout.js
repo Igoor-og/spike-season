@@ -23,7 +23,7 @@ const COUPONS = {
 const MP_ACCESS_TOKEN = CONFIG.MERCADOPAGO_ACCESS_TOKEN;
 
 function formatBRL(v) {
-    try { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0)); } catch { return `R$ ${Number(v||0).toFixed(2).replace('.', ',')}`; }
+    try { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0)); } catch { return `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`; }
 }
 
 function calculateFinalPrice(basePrice, quantity, shippingCost, couponDiscountPercent, couponDiscountValue) {
@@ -488,7 +488,7 @@ function runPixCheckout() {
     if (keyEl) keyEl.innerText = PIX_KEY;
     if (copyBtn) {
         copyBtn.onclick = async () => {
-            try { await navigator.clipboard.writeText(payload); showModal('Copiado', 'Código copiado!'); } catch {}
+            try { await navigator.clipboard.writeText(payload); showModal('Copiado', 'Código copiado!'); } catch { }
         };
     }
     const gBtn = document.getElementById('gen-payment');
@@ -531,7 +531,7 @@ function runPixCheckout() {
                     const list = JSON.parse(localStorage.getItem('spikeOrders') || '[]');
                     list.push(order);
                     localStorage.setItem('spikeOrders', JSON.stringify(list));
-                } catch {}
+                } catch { }
                 sendToFormspree();
             });
         };
@@ -735,7 +735,7 @@ async function sendToFormspree() {
         total: totalVal
     };
     // --- NOVO BLOCO SEGURO ---
-    
+
     // 1. TRAVA DE SEGURANÇA IMEDIATA
     const pixPaid = document.getElementById('pix-paid');
     if (pixPaid) {
@@ -745,12 +745,12 @@ async function sendToFormspree() {
     }
 
     // 2. ENVIO DO E-MAIL EM SEGUNDO PLANO (SEM AWAIT)
-    const PUBLIC_KEY_74K = "74K-UVW-EQCEZ0BET"; 
+    const PUBLIC_KEY_74K = "74K-UVW-EQCEZ0BET";
     emailjs.send(
-        "service_0oibu1g", 
-        "template_x19kk6a", 
-        { to_email: state.userData.email, codigo_pedido: codigoPedido }, 
-        PUBLIC_KEY_74K 
+        "service_0oibu1g",
+        "template_x19kk6a",
+        { to_email: state.userData.email, codigo_pedido: codigoPedido },
+        PUBLIC_KEY_74K
     ).catch(err => console.error("Erro e-mail:", err));
 
     // 3. SALVAR NA PLANILHA E FINALIZAR
@@ -781,84 +781,84 @@ async function sendToFormspree() {
     }
 
 
-// --- Utils ---
-function setStep(num) {
-    state.currentStep = num;
-    localStorage.setItem('spikeStep', num);
+    // --- Utils ---
+    function setStep(num) {
+        state.currentStep = num;
+        localStorage.setItem('spikeStep', num);
 
-    document.querySelectorAll('.progress-step').forEach((s, idx) => {
-        if (idx + 1 <= num) s.classList.add('active');
-        else s.classList.remove('active');
-    });
-
-    document.querySelectorAll('.checkout-step').forEach((s, idx) => {
-        if (idx + 1 === num) s.classList.remove('hidden');
-        else s.classList.add('hidden');
-    });
-
-    if (num === 3) updateSummary();
-}
-
-function restoreStep() {
-    const savedStep = parseInt(localStorage.getItem('spikeStep'));
-    if (savedStep && state.cart.length > 0) {
-        setStep(savedStep);
-    }
-
-    // Restore payment state so paid-btn reappears after returning from the bank
-    if (localStorage.getItem('spikePaymentGenerated') === 'true') {
-        showPaidButton();
-    }
-
-    if (state.userData) {
-        Object.keys(state.userData).forEach(f => {
-            const el = document.getElementById(f);
-            if (el) el.value = state.userData[f];
+        document.querySelectorAll('.progress-step').forEach((s, idx) => {
+            if (idx + 1 <= num) s.classList.add('active');
+            else s.classList.remove('active');
         });
-        if (state.userData.estado) {
-            state.freight = SHIPPING_VALUES[state.userData.estado] || 25;
+
+        document.querySelectorAll('.checkout-step').forEach((s, idx) => {
+            if (idx + 1 === num) s.classList.remove('hidden');
+            else s.classList.add('hidden');
+        });
+
+        if (num === 3) updateSummary();
+    }
+
+    function restoreStep() {
+        const savedStep = parseInt(localStorage.getItem('spikeStep'));
+        if (savedStep && state.cart.length > 0) {
+            setStep(savedStep);
+        }
+
+        // Restore payment state so paid-btn reappears after returning from the bank
+        if (localStorage.getItem('spikePaymentGenerated') === 'true') {
+            showPaidButton();
+        }
+
+        if (state.userData) {
+            Object.keys(state.userData).forEach(f => {
+                const el = document.getElementById(f);
+                if (el) el.value = state.userData[f];
+            });
+            if (state.userData.estado) {
+                state.freight = SHIPPING_VALUES[state.userData.estado] || 25;
+            }
         }
     }
-}
 
-function showModal(title, msg) {
-    const t = document.getElementById('modal-title');
-    const m = document.getElementById('modal-msg');
-    const c = document.getElementById('modal-cancel');
-    const mod = document.getElementById('generic-modal');
+    function showModal(title, msg) {
+        const t = document.getElementById('modal-title');
+        const m = document.getElementById('modal-msg');
+        const c = document.getElementById('modal-cancel');
+        const mod = document.getElementById('generic-modal');
 
-    if (t) t.innerText = title;
-    if (m) m.innerHTML = msg.replace(/\n/g, '<br>');
-    if (c) c.style.display = 'none';
-    if (mod) mod.classList.add('active');
-}
-
-function showConfirmModal(title, msg, onConfirm) {
-    const t = document.getElementById('modal-title');
-    const m = document.getElementById('modal-msg');
-    const c = document.getElementById('modal-cancel');
-    const ok = document.getElementById('modal-ok');
-    const mod = document.getElementById('generic-modal');
-
-    if (t) t.innerText = title;
-    if (m) m.innerText = msg;
-    if (c) c.style.display = 'block';
-    if (ok) ok.innerText = 'Confirmar';
-    if (mod) mod.classList.add('active');
-
-    if (ok) {
-        const newOk = ok.cloneNode(true);
-        ok.parentNode.replaceChild(newOk, ok);
-        newOk.addEventListener('click', () => {
-            onConfirm();
-            closeModal('generic-modal');
-        });
+        if (t) t.innerText = title;
+        if (m) m.innerHTML = msg.replace(/\n/g, '<br>');
+        if (c) c.style.display = 'none';
+        if (mod) mod.classList.add('active');
     }
-}
 
-function closeModal(id) {
-    const mod = document.getElementById(id);
-    if (mod) mod.classList.remove('active');
-    const ok = document.getElementById('modal-ok');
-    if (ok) ok.innerText = 'OK';
-}
+    function showConfirmModal(title, msg, onConfirm) {
+        const t = document.getElementById('modal-title');
+        const m = document.getElementById('modal-msg');
+        const c = document.getElementById('modal-cancel');
+        const ok = document.getElementById('modal-ok');
+        const mod = document.getElementById('generic-modal');
+
+        if (t) t.innerText = title;
+        if (m) m.innerText = msg;
+        if (c) c.style.display = 'block';
+        if (ok) ok.innerText = 'Confirmar';
+        if (mod) mod.classList.add('active');
+
+        if (ok) {
+            const newOk = ok.cloneNode(true);
+            ok.parentNode.replaceChild(newOk, ok);
+            newOk.addEventListener('click', () => {
+                onConfirm();
+                closeModal('generic-modal');
+            });
+        }
+    }
+
+    function closeModal(id) {
+        const mod = document.getElementById(id);
+        if (mod) mod.classList.remove('active');
+        const ok = document.getElementById('modal-ok');
+        if (ok) ok.innerText = 'OK';
+    }
