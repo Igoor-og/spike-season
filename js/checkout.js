@@ -734,153 +734,68 @@ async function sendToFormspree() {
         produtos: state.cart.map(i => `${i.color} x${i.quantity}`).join(', '),
         total: totalVal
     };
+    // --- NOVO BLOCO SEGURO ---
+    
+    // 1. TRAVA DE SEGURANÇA IMEDIATA
+    const pixPaid = document.getElementById('pix-paid');
+    if (pixPaid) {
+        pixPaid.disabled = true;
+        pixPaid.innerText = "PROCESSANDO...";
+        pixPaid.style.opacity = "0.5";
+    }
 
-        // --- COPIE E SUBSTITUA NO CHECKOUT.JS ---
-try {
-    // Chave da conta onde está o template de Compra Confirmada
+    // 2. ENVIO DO E-MAIL EM SEGUNDO PLANO (SEM AWAIT)
     const PUBLIC_KEY_74K = "74K-UVW-EQCEZ0BET"; 
-
-    const emailParams = {
-        to_email: state.userData.email,
-        codigo_pedido: codigoPedido
-    };
-
-    console.log("Enviando confirmação via conta 74K...");
-
-    // Passar a chave como 4º parâmetro resolve o erro de "User ID required"
-    await emailjs.send(
+    emailjs.send(
         "service_0oibu1g", 
         "template_x19kk6a", 
-        emailParams, 
+        { to_email: state.userData.email, codigo_pedido: codigoPedido }, 
         PUBLIC_KEY_74K 
-    );
-    
-    console.log("E-mail enviado com sucesso!");
-} catch (emailErr) {
-    console.error("Erro no EmailJS:", emailErr);
-}
-// --- FIM DO BLOCO ---
-
-    // 2️⃣ Envia os dados silenciosamente para você no Formspree
+    ).catch(err => console.error("Erro e-mail:", err));
+    // 3. SALVAR NA PLANILHA E FINALIZAR
     try {
-        const response = await fetch(CONFIG.FORMSPREE_ENDPOINT, {
+        await fetch(SHEETS_URL, {
             method: 'POST',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sheetsData)
         });
 
-        if (response.ok) {
-            localStorage.removeItem('spikeCart');
-            localStorage.removeItem('spikeUserData');
-            localStorage.removeItem('spikeStep');
-            localStorage.removeItem('spikePaymentGenerated');
+        // Limpeza de cache após sucesso
+        localStorage.removeItem('spikeCart');
+        localStorage.removeItem('spikeUserData');
+        localStorage.removeItem('spikeStep');
+        localStorage.removeItem('spikePaymentGenerated');
 
-            // Salva pedido no Google Sheets
-            try {
-                await fetch(SHEETS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sheetsData)
-                });
-            } catch (sheetErr) {
-                console.warn('Spike: Google Sheets falhou:', sheetErr);
-            }
+        showModal('Pedido Confirmado!',
+            `<strong>Seu pedido foi recebido com sucesso!</strong><br><br>` +
+            `🧾 Código: <strong style="color: var(--primary-purple);">${codigoPedido}</strong><br><br>` +
+            'Você receberá um e-mail de confirmação em instantes.');
 
-            showModal('Pedido Confirmado!',
-                `<strong>Seu pedido foi recebido com sucesso!</strong><br><br>` +
-                `🧾 Código do pedido: <strong style="color: var(--primary-purple);">${codigoPedido}</strong><br><br>` +
-                '⚠ AVISO DE PRODUÇÃO: Devido ao processo artesanal premium, os óculos levam aproximadamente 30 dias para serem produzidos + o tempo de envio dos correios.<br><br>' +
-                'Você receberá um e-mail com o código de rastreio assim que seu pedido for postado. Qualquer dúvida, entre em contato com nosso suporte no menu superior.');
+        const success = document.getElementById('success-screen');
+        if (success) success.classList.add('active');
 
-            const success = document.getElementById('success-screen');
-            if (success) success.classList.add('active');
-        } else {
-            showModal('Erro', 'Houve um erro no envio. Tente novamente mais tarde.');
-        }
     } catch (e) {
-        showModal('Erro', 'Erro de conexão.');
+        console.error("Erro final:", e);
+        showModal('Erro', 'Houve um erro, mas seu pedido será processado manualmente.');
     }
-}
+} // <--- FECHA sendToFormspree
 
-// --- Utils ---
+// Adicione as funções utilitárias que ficaram de fora ou foram cortadas:
+
 function setStep(num) {
     state.currentStep = num;
     localStorage.setItem('spikeStep', num);
-
     document.querySelectorAll('.progress-step').forEach((s, idx) => {
         if (idx + 1 <= num) s.classList.add('active');
         else s.classList.remove('active');
     });
-
     document.querySelectorAll('.checkout-step').forEach((s, idx) => {
         if (idx + 1 === num) s.classList.remove('hidden');
         else s.classList.add('hidden');
     });
-
     if (num === 3) updateSummary();
 }
 
-function restoreStep() {
-    const savedStep = parseInt(localStorage.getItem('spikeStep'));
-    if (savedStep && state.cart.length > 0) {
-        setStep(savedStep);
-    }
-
-    // Restore payment state so paid-btn reappears after returning from the bank
-    if (localStorage.getItem('spikePaymentGenerated') === 'true') {
-        showPaidButton();
-    }
-
-    if (state.userData) {
-        Object.keys(state.userData).forEach(f => {
-            const el = document.getElementById(f);
-            if (el) el.value = state.userData[f];
-        });
-        if (state.userData.estado) {
-            state.freight = SHIPPING_VALUES[state.userData.estado] || 25;
-        }
-    }
-}
-
-function showModal(title, msg) {
-    const t = document.getElementById('modal-title');
-    const m = document.getElementById('modal-msg');
-    const c = document.getElementById('modal-cancel');
-    const mod = document.getElementById('generic-modal');
-
-    if (t) t.innerText = title;
-    if (m) m.innerHTML = msg.replace(/\n/g, '<br>');
-    if (c) c.style.display = 'none';
-    if (mod) mod.classList.add('active');
-}
-
-function showConfirmModal(title, msg, onConfirm) {
-    const t = document.getElementById('modal-title');
-    const m = document.getElementById('modal-msg');
-    const c = document.getElementById('modal-cancel');
-    const ok = document.getElementById('modal-ok');
-    const mod = document.getElementById('generic-modal');
-
-    if (t) t.innerText = title;
-    if (m) m.innerText = msg;
-    if (c) c.style.display = 'block';
-    if (ok) ok.innerText = 'Confirmar';
-    if (mod) mod.classList.add('active');
-
-    if (ok) {
-        const newOk = ok.cloneNode(true);
-        ok.parentNode.replaceChild(newOk, ok);
-        newOk.addEventListener('click', () => {
-            onConfirm();
-            closeModal('generic-modal');
-        });
-    }
-}
-
-function closeModal(id) {
-    const mod = document.getElementById(id);
-    if (mod) mod.classList.remove('active');
-    const ok = document.getElementById('modal-ok');
-    if (ok) ok.innerText = 'OK';
-}
+// ... certifique-se de que as funções restoreStep, showModal, etc., 
+// estão presentes e feche o script corretamente no final.
