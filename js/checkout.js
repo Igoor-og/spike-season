@@ -29,7 +29,7 @@ const COUPONS = {
 };
 
 // Security Note: Token is used directly for stability in file:// environment.
-const MP_ACCESS_TOKEN = CONFIG.MERCADOPAGO_ACCESS_TOKEN;
+const MP_ACCESS_TOKEN = (typeof CONFIG !== 'undefined' && CONFIG.MERCADOPAGO_ACCESS_TOKEN) ? CONFIG.MERCADOPAGO_ACCESS_TOKEN : '';
 
 function formatBRL(v) {
     try { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0)); } catch { return `R$ ${Number(v||0).toFixed(2).replace('.', ',')}`; }
