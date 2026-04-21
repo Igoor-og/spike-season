@@ -335,11 +335,9 @@ function applyCoupon() {
     const code = document.getElementById('cupom')?.value.toUpperCase() || "";
     if (Object.prototype.hasOwnProperty.call(COUPONS, code)) {
         state.appliedCoupon = { code: code, value: COUPONS[code] };
-        updateSummary();
         showModal('Sucesso', 'Cupom aplicado com sucesso!');
     } else {
         state.appliedCoupon = null;
-        updateSummary();
         showModal('Erro', 'Cupom inválido ou expirado.');
     }
 }
@@ -541,7 +539,121 @@ function runPixCheckout() {
 }
 
 async function generatePayment() {
-    runPixCheckout();
+    if (typeof PAYMENT_METHOD !== 'undefined' && PAYMENT_METHOD === 'PIX') {
+        runPixCheckout();
+        return;
+    }
+    const subtotal = state.cart.reduce((a, b) => a + ((b.price || PRODUCT_PRICE) * (b.quantity || 1)), 0);
+    // Include freight in discount calculation
+    const discountableAmount = subtotal + state.freight;
+    const discount = (state.appliedCoupon ? discountableAmount * state.appliedCoupon.value : 0).toFixed(2);
+
+    // Construct Mercado Pago Items
+    const mpItems = state.cart.map(item => ({
+        title: `Óculos Spike - ${item.color}`,
+        unit_price: Number(item.price),
+        quantity: Number(item.quantity),
+        currency_id: 'BRL'
+    }));
+
+    // Add Shipping
+    let finalFreight = state.freight;
+    if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) {
+        finalFreight = 0;
+    }
+
+    if (finalFreight > 0) {
+        mpItems.push({
+            title: 'Frete',
+            unit_price: Number(finalFreight),
+            quantity: 1,
+            currency_id: 'BRL'
+        });
+    }
+
+    // Add Discount
+    if (discount > 0) {
+        mpItems.push({
+            title: `Desconto Cupom (${state.appliedCoupon.code})`,
+            unit_price: -Number(discount),
+            quantity: 1,
+            currency_id: 'BRL'
+        });
+    }
+
+    const preference = {
+        items: mpItems,
+        payer: {
+            name: state.userData.nome,
+            email: state.userData.email,
+            identification: {
+                type: 'CPF',
+                number: state.userData.cpf.replace(/\D/g, '')
+            },
+            address: {
+                street_name: state.userData.rua,
+                street_number: Number(state.userData.numero) || 0,
+                zip_code: state.userData.cep.replace(/\D/g, '')
+            }
+        },
+        back_urls: {
+            success: window.location.href.split('checkout.html')[0] + 'index.html?status=success',
+            failure: window.location.href,
+            pending: window.location.href
+        },
+        auto_return: 'approved',
+    };
+
+    console.log("Spike: Generating Payment (Frontend Only)...", preference);
+    showModal('Redirecionando', 'Estamos preparando seu checkout seguro de pagamento...');
+
+    try {
+        const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(preference)
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.message || 'Falha ao conectar com o serviço de pagamento');
+        }
+
+        const data = await response.json();
+
+        if (data.init_point) {
+            state.paymentGenerated = true;
+            closeModal('generic-modal');
+
+            // Open immediately to avoid popup blocker
+            const payWin = window.open(data.init_point, '_blank');
+
+            if (!payWin || payWin.closed || typeof payWin.closed === 'undefined') {
+                // Fallback if blocked
+                showModal('Atenção', 'O bloqueador de popups impediu a abertura automática. Clique no botão abaixo para ir ao pagamento.');
+                const okBtn = document.getElementById('modal-ok');
+                if (okBtn) {
+                    okBtn.innerText = 'Ir para o Pagamento';
+                    okBtn.onclick = () => {
+                        window.open(data.init_point, '_blank');
+                        showPaidButton();
+                    };
+                }
+            } else {
+                showModal('Sucesso', 'O checkout abriu em uma nova aba. Conclua o pagamento por lá!');
+                showPaidButton();
+            }
+        } else {
+            throw new Error('Link de pagamento não recebido');
+        }
+
+    } catch (error) {
+        console.error("Spike: MP Error", error);
+        showModal('Erro no Checkout', 'Não conseguimos gerar o link de pagamento. Verifique sua conexão ou tente novamente mais tarde.');
+    }
 }
 
 function showPaidButton() {
