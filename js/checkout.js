@@ -3,15 +3,6 @@
  */
 
 const PRODUCT_PRICE = 109.90;
-
-// --- CONFIGURAÇÃO DE PAGAMENTO ---
-// Altere para 'PIX' para ativar o fluxo de Pix, ou 'MP' para Mercado Pago
-const PAYMENT_METHOD = 'PIX';
-
-const PIX_KEY = "4691164a-5f55-4ad4-bff3-f3040c3e93d3";
-const STORE_NAME = "1629";
-const STORE_CITY = "SAO_PAULO";
-
 const SHIPPING_VALUES = {
     'SP': 15, 'RJ': 15, 'MG': 15, 'ES': 15,
     'PR': 18, 'SC': 18, 'RS': 18,
@@ -29,7 +20,7 @@ const COUPONS = {
 };
 
 // Security Note: Token is used directly for stability in file:// environment.
-const MP_ACCESS_TOKEN = (typeof CONFIG !== 'undefined' && CONFIG.MERCADOPAGO_ACCESS_TOKEN) ? CONFIG.MERCADOPAGO_ACCESS_TOKEN : '';
+const MP_ACCESS_TOKEN = CONFIG.MERCADOPAGO_ACCESS_TOKEN;
 
 function formatBRL(v) {
     try { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0)); } catch { return `R$ ${Number(v||0).toFixed(2).replace('.', ',')}`; }
@@ -344,11 +335,11 @@ function applyCoupon() {
     const code = document.getElementById('cupom')?.value.toUpperCase() || "";
     if (Object.prototype.hasOwnProperty.call(COUPONS, code)) {
         state.appliedCoupon = { code: code, value: COUPONS[code] };
-        updateSummary(); // FIX: atualiza os valores exibidos na tela
+        updateSummary();
         showModal('Sucesso', 'Cupom aplicado com sucesso!');
     } else {
         state.appliedCoupon = null;
-        updateSummary(); // FIX: remove desconto caso cupom seja inválido
+        updateSummary();
         showModal('Erro', 'Cupom inválido ou expirado.');
     }
 }
@@ -550,121 +541,7 @@ function runPixCheckout() {
 }
 
 async function generatePayment() {
-    if (typeof PAYMENT_METHOD !== 'undefined' && PAYMENT_METHOD === 'PIX') {
-        runPixCheckout();
-        return;
-    }
-    const subtotal = state.cart.reduce((a, b) => a + ((b.price || PRODUCT_PRICE) * (b.quantity || 1)), 0);
-    // Include freight in discount calculation
-    const discountableAmount = subtotal + state.freight;
-    const discount = (state.appliedCoupon ? discountableAmount * state.appliedCoupon.value : 0).toFixed(2);
-
-    // Construct Mercado Pago Items
-    const mpItems = state.cart.map(item => ({
-        title: `Óculos Spike - ${item.color}`,
-        unit_price: Number(item.price),
-        quantity: Number(item.quantity),
-        currency_id: 'BRL'
-    }));
-
-    // Add Shipping
-    let finalFreight = state.freight;
-    if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) {
-        finalFreight = 0;
-    }
-
-    if (finalFreight > 0) {
-        mpItems.push({
-            title: 'Frete',
-            unit_price: Number(finalFreight),
-            quantity: 1,
-            currency_id: 'BRL'
-        });
-    }
-
-    // Add Discount
-    if (discount > 0) {
-        mpItems.push({
-            title: `Desconto Cupom (${state.appliedCoupon.code})`,
-            unit_price: -Number(discount),
-            quantity: 1,
-            currency_id: 'BRL'
-        });
-    }
-
-    const preference = {
-        items: mpItems,
-        payer: {
-            name: state.userData.nome,
-            email: state.userData.email,
-            identification: {
-                type: 'CPF',
-                number: state.userData.cpf.replace(/\D/g, '')
-            },
-            address: {
-                street_name: state.userData.rua,
-                street_number: Number(state.userData.numero) || 0,
-                zip_code: state.userData.cep.replace(/\D/g, '')
-            }
-        },
-        back_urls: {
-            success: window.location.href.split('checkout.html')[0] + 'index.html?status=success',
-            failure: window.location.href,
-            pending: window.location.href
-        },
-        auto_return: 'approved',
-    };
-
-    console.log("Spike: Generating Payment (Frontend Only)...", preference);
-    showModal('Redirecionando', 'Estamos preparando seu checkout seguro de pagamento...');
-
-    try {
-        const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(preference)
-        });
-
-        if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.message || 'Falha ao conectar com o serviço de pagamento');
-        }
-
-        const data = await response.json();
-
-        if (data.init_point) {
-            state.paymentGenerated = true;
-            closeModal('generic-modal');
-
-            // Open immediately to avoid popup blocker
-            const payWin = window.open(data.init_point, '_blank');
-
-            if (!payWin || payWin.closed || typeof payWin.closed === 'undefined') {
-                // Fallback if blocked
-                showModal('Atenção', 'O bloqueador de popups impediu a abertura automática. Clique no botão abaixo para ir ao pagamento.');
-                const okBtn = document.getElementById('modal-ok');
-                if (okBtn) {
-                    okBtn.innerText = 'Ir para o Pagamento';
-                    okBtn.onclick = () => {
-                        window.open(data.init_point, '_blank');
-                        showPaidButton();
-                    };
-                }
-            } else {
-                showModal('Sucesso', 'O checkout abriu em uma nova aba. Conclua o pagamento por lá!');
-                showPaidButton();
-            }
-        } else {
-            throw new Error('Link de pagamento não recebido');
-        }
-
-    } catch (error) {
-        console.error("Spike: MP Error", error);
-        showModal('Erro no Checkout', 'Não conseguimos gerar o link de pagamento. Verifique sua conexão ou tente novamente mais tarde.');
-    }
+    runPixCheckout();
 }
 
 function showPaidButton() {
@@ -745,68 +622,153 @@ async function sendToFormspree() {
         produtos: state.cart.map(i => `${i.color} x${i.quantity}`).join(', '),
         total: totalVal
     };
-    // --- NOVO BLOCO SEGURO ---
-    
-    // 1. TRAVA DE SEGURANÇA IMEDIATA
-    const pixPaid = document.getElementById('pix-paid');
-    if (pixPaid) {
-        pixPaid.disabled = true;
-        pixPaid.innerText = "PROCESSANDO...";
-        pixPaid.style.opacity = "0.5";
-    }
 
-    // 2. ENVIO DO E-MAIL EM SEGUNDO PLANO (SEM AWAIT)
+        // --- COPIE E SUBSTITUA NO CHECKOUT.JS ---
+try {
+    // Chave da conta onde está o template de Compra Confirmada
     const PUBLIC_KEY_74K = "74K-UVW-EQCEZ0BET"; 
-    emailjs.send(
+
+    const emailParams = {
+        to_email: state.userData.email,
+        codigo_pedido: codigoPedido
+    };
+
+    console.log("Enviando confirmação via conta 74K...");
+
+    // Passar a chave como 4º parâmetro resolve o erro de "User ID required"
+    await emailjs.send(
         "service_0oibu1g", 
         "template_x19kk6a", 
-        { to_email: state.userData.email, codigo_pedido: codigoPedido }, 
+        emailParams, 
         PUBLIC_KEY_74K 
-    ).catch(err => console.error("Erro e-mail:", err));
-    // 3. SALVAR NA PLANILHA E FINALIZAR
+    );
+    
+    console.log("E-mail enviado com sucesso!");
+} catch (emailErr) {
+    console.error("Erro no EmailJS:", emailErr);
+}
+// --- FIM DO BLOCO ---
+
+    // 2️⃣ Envia os dados silenciosamente para você no Formspree
     try {
-        await fetch(SHEETS_URL, {
+        const response = await fetch(CONFIG.FORMSPREE_ENDPOINT, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(sheetsData)
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
         });
 
-        // Limpeza de cache após sucesso
-        localStorage.removeItem('spikeCart');
-        localStorage.removeItem('spikeUserData');
-        localStorage.removeItem('spikeStep');
-        localStorage.removeItem('spikePaymentGenerated');
+        if (response.ok) {
+            localStorage.removeItem('spikeCart');
+            localStorage.removeItem('spikeUserData');
+            localStorage.removeItem('spikeStep');
+            localStorage.removeItem('spikePaymentGenerated');
 
-        showModal('Pedido Confirmado!',
-            `<strong>Seu pedido foi recebido com sucesso!</strong><br><br>` +
-            `🧾 Código: <strong style="color: var(--primary-purple);">${codigoPedido}</strong><br><br>` +
-            'Você receberá um e-mail de confirmação em instantes.');
+            // Salva pedido no Google Sheets
+            try {
+                await fetch(SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sheetsData)
+                });
+            } catch (sheetErr) {
+                console.warn('Spike: Google Sheets falhou:', sheetErr);
+            }
 
-        const success = document.getElementById('success-screen');
-        if (success) success.classList.add('active');
+            showModal('Pedido Confirmado!',
+                `<strong>Seu pedido foi recebido com sucesso!</strong><br><br>` +
+                `🧾 Código do pedido: <strong style="color: var(--primary-purple);">${codigoPedido}</strong><br><br>` +
+                '⚠ AVISO DE PRODUÇÃO: Devido ao processo artesanal premium, os óculos levam aproximadamente 30 dias para serem produzidos + o tempo de envio dos correios.<br><br>' +
+                'Você receberá um e-mail com o código de rastreio assim que seu pedido for postado. Qualquer dúvida, entre em contato com nosso suporte no menu superior.');
 
+            const success = document.getElementById('success-screen');
+            if (success) success.classList.add('active');
+        } else {
+            showModal('Erro', 'Houve um erro no envio. Tente novamente mais tarde.');
+        }
     } catch (e) {
-        console.error("Erro final:", e);
-        showModal('Erro', 'Houve um erro, mas seu pedido será processado manualmente.');
+        showModal('Erro', 'Erro de conexão.');
     }
-} // <--- FECHA sendToFormspree
+}
 
-// Adicione as funções utilitárias que ficaram de fora ou foram cortadas:
-
+// --- Utils ---
 function setStep(num) {
     state.currentStep = num;
     localStorage.setItem('spikeStep', num);
+
     document.querySelectorAll('.progress-step').forEach((s, idx) => {
         if (idx + 1 <= num) s.classList.add('active');
         else s.classList.remove('active');
     });
+
     document.querySelectorAll('.checkout-step').forEach((s, idx) => {
         if (idx + 1 === num) s.classList.remove('hidden');
         else s.classList.add('hidden');
     });
+
     if (num === 3) updateSummary();
 }
 
-// ... certifique-se de que as funções restoreStep, showModal, etc., 
-// estão presentes e feche o script corretamente no final.
+function restoreStep() {
+    const savedStep = parseInt(localStorage.getItem('spikeStep'));
+    if (savedStep && state.cart.length > 0) {
+        setStep(savedStep);
+    }
+
+    // Restore payment state so paid-btn reappears after returning from the bank
+    if (localStorage.getItem('spikePaymentGenerated') === 'true') {
+        showPaidButton();
+    }
+
+    if (state.userData) {
+        Object.keys(state.userData).forEach(f => {
+            const el = document.getElementById(f);
+            if (el) el.value = state.userData[f];
+        });
+        if (state.userData.estado) {
+            state.freight = SHIPPING_VALUES[state.userData.estado] || 25;
+        }
+    }
+}
+
+function showModal(title, msg) {
+    const t = document.getElementById('modal-title');
+    const m = document.getElementById('modal-msg');
+    const c = document.getElementById('modal-cancel');
+    const mod = document.getElementById('generic-modal');
+
+    if (t) t.innerText = title;
+    if (m) m.innerHTML = msg.replace(/\n/g, '<br>');
+    if (c) c.style.display = 'none';
+    if (mod) mod.classList.add('active');
+}
+
+function showConfirmModal(title, msg, onConfirm) {
+    const t = document.getElementById('modal-title');
+    const m = document.getElementById('modal-msg');
+    const c = document.getElementById('modal-cancel');
+    const ok = document.getElementById('modal-ok');
+    const mod = document.getElementById('generic-modal');
+
+    if (t) t.innerText = title;
+    if (m) m.innerText = msg;
+    if (c) c.style.display = 'block';
+    if (ok) ok.innerText = 'Confirmar';
+    if (mod) mod.classList.add('active');
+
+    if (ok) {
+        const newOk = ok.cloneNode(true);
+        ok.parentNode.replaceChild(newOk, ok);
+        newOk.addEventListener('click', () => {
+            onConfirm();
+            closeModal('generic-modal');
+        });
+    }
+}
+
+function closeModal(id) {
+    const mod = document.getElementById(id);
+    if (mod) mod.classList.remove('active');
+    const ok = document.getElementById('modal-ok');
+    if (ok) ok.innerText = 'OK';
+}
