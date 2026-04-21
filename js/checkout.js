@@ -3,6 +3,14 @@
  */
 
 const PRODUCT_PRICE = 109.90;
+
+// --- CONFIGURAÇÃO DE PAGAMENTO ---
+// Altere para 'PIX' para ativar o fluxo de Pix, ou 'MP' para Mercado Pago
+const PAYMENT_METHOD = 'PIX';
+
+const PIX_KEY = "4691164a-5f55-4ad4-bff3-f3040c3e93d3";
+const STORE_NAME = "1629";
+const STORE_CITY = "SAO_PAULO";
 const SHIPPING_VALUES = {
     'SP': 15, 'RJ': 15, 'MG': 15, 'ES': 15,
     'PR': 18, 'SC': 18, 'RS': 18,
@@ -335,9 +343,11 @@ function applyCoupon() {
     const code = document.getElementById('cupom')?.value.toUpperCase() || "";
     if (Object.prototype.hasOwnProperty.call(COUPONS, code)) {
         state.appliedCoupon = { code: code, value: COUPONS[code] };
+        updateSummary(); // FIX: atualiza os valores exibidos na tela
         showModal('Sucesso', 'Cupom aplicado com sucesso!');
     } else {
         state.appliedCoupon = null;
+        updateSummary(); // FIX: remove desconto caso cupom seja inválido
         showModal('Erro', 'Cupom inválido ou expirado.');
     }
 }
