@@ -16,7 +16,6 @@ const COUPONS = {
     'FUG10': 0.10,
     'SWAGBOY10': 0.10,
     'DEV5': 0.954545,
-    'FLEXZERO': 0
 };
 
 // Security Note: Token is used directly for stability in file:// environment.
