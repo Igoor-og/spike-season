@@ -57,7 +57,8 @@ const state = {
     quantity: 1,
     appliedCoupon: null,
     freight: 0,
-    paymentGenerated: false
+    paymentGenerated: false,
+    orderSubmitting: false
 };
 
 // --- Initialization ---
@@ -514,7 +515,12 @@ function runPixCheckout() {
     }
     if (paidBtn) {
         paidBtn.onclick = () => {
+            if (state.orderSubmitting) return; // bloqueia cliques duplos
             showConfirmModal('Confirmação de Pagamento', 'Você confirma que realizou o pagamento via PIX?', () => {
+                if (state.orderSubmitting) return; // bloqueia duplo clique no modal
+                state.orderSubmitting = true;
+                paidBtn.disabled = true;
+                paidBtn.innerText = 'Processando...';
                 const order = {
                     orderID: reference,
                     product: 'SPIKE GLASSES',
@@ -665,7 +671,12 @@ function showPaidButton() {
 }
 
 function handlePaidConfirmation() {
+    if (state.orderSubmitting) return;
     showConfirmModal('Confirmação de Pagamento', 'Você confirma que realizou o pagamento?', () => {
+        if (state.orderSubmitting) return;
+        state.orderSubmitting = true;
+        const pBtn = document.getElementById('paid-btn');
+        if (pBtn) { pBtn.disabled = true; pBtn.innerText = 'Processando...'; }
         sendToFormspree();
     });
 }
