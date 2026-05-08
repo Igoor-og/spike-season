@@ -681,8 +681,25 @@ function handlePaidConfirmation() {
     });
 }
 
-function gerarCodigoPedido() {
+async function gerarCodigoPedido() {
     const ano = new Date().getFullYear();
+    try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbwTMyWKVyeSoh0YbQupIniFom7PTj0LeEhGxTRyePiTBbBW__LfWuNwPRp_5ng7og2wTg/exec');
+        const data = await res.json();
+        if (data.success && data.pedidos && data.pedidos.length > 0) {
+            const codigos = data.pedidos
+                .map(p => p['Código'] || '')
+                .filter(c => c.startsWith('SS-'))
+                .map(c => parseInt(c.split('-')[2]) || 0);
+            const ultimo = codigos.length > 0 ? Math.max(...codigos) : 0;
+            const seq = ultimo + 1;
+            localStorage.setItem('spikeOrderSeq', seq);
+            return `SS-${ano}-${String(seq).padStart(4, '0')}`;
+        }
+    } catch (err) {
+        console.warn('Spike: fallback localStorage para código:', err);
+    }
+    // Fallback se a planilha não responder
     const seq = (parseInt(localStorage.getItem('spikeOrderSeq') || '0') + 1);
     localStorage.setItem('spikeOrderSeq', seq);
     return `SS-${ano}-${String(seq).padStart(4, '0')}`;
