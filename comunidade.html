@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunidade — SPIKE SEASON 16*29</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .comunidade-main {
+      padding-top: 120px;
+      min-height: 100vh;
+    }
+
+    .comunidade-hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    .comunidade-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .comunidade-hero h1 span { color: var(--primary-purple); }
+
+    .comunidade-hero p {
+      color: var(--gray-text);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ── FORM CARD ── */
+    .post-form-card {
+      max-width: 680px;
+      margin: 0 auto 60px;
+      padding: 0 20px;
+    }
+
+    .form-inner {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--gray-border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .form-inner h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--primary-purple);
+      margin-bottom: 20px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    .f-field { margin-bottom: 14px; }
+    .f-field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-text);
+      margin-bottom: 8px;
+    }
+
+    .f-field input,
+    .f-field textarea {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--gray-border);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    .f-field input:focus,
+    .f-field textarea:focus { border-color: var(--primary-purple); }
+    .f-field input::placeholder,
+    .f-field textarea::placeholder { color: #444; }
+
+    /* Upload area */
+    .upload-area {
+      width: 100%;
+      padding: 28px 20px;
+      border: 2px dashed var(--gray-border);
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.02);
+      position: relative;
+    }
+
+    .upload-area:hover { border-color: var(--primary-purple); background: rgba(123,44,255,0.05); }
+    .upload-area.has-file { border-color: var(--primary-purple); background: rgba(123,44,255,0.08); }
+    .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+    .upload-text { font-size: 0.85rem; color: var(--gray-text); }
+    .upload-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 12px; display: none; }
+
+    /* Submit */
+    .btn-post {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary-purple);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-post:hover { background: var(--primary-purple-hover); transform: translateY(-1px); }
+    .btn-post:active { transform: translateY(1px); }
+    .btn-post:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; transform: none; }
+
+    .post-feedback {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      text-align: center;
+      display: none;
+    }
+    .post-feedback.success { background: rgba(123,44,255,0.15); border: 1px solid rgba(123,44,255,0.3); color: #c084fc; display: block; }
+    .post-feedback.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; display: block; }
+
+    /* ── FEED ── */
+    .feed-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    .feed-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .feed-header h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--primary-purple);
+    }
+
+    .feed-count {
+      font-size: 0.75rem;
+      color: var(--gray-text);
+    }
+
+    /* Grid de posts */
+    .feed-grid {
+      columns: 3 280px;
+      column-gap: 16px;
+    }
+
+    @media (max-width: 600px) { .feed-grid { columns: 1; } }
+    @media (max-width: 900px) { .feed-grid { columns: 2 200px; } }
+
+    .post-card {
+      break-inside: avoid;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--gray-border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      transition: border-color 0.2s, transform 0.2s;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .post-card:hover { border-color: rgba(123,44,255,0.4); transform: translateY(-2px); }
+
+    .post-img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      display: block;
+    }
+
+    .post-img.portrait { aspect-ratio: 3/4; }
+
+    .post-body { padding: 16px; }
+
+    .post-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .post-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .post-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .post-date {
+      font-size: 0.72rem;
+      color: var(--gray-text);
+      margin-left: auto;
+    }
+
+    .post-text {
+      font-size: 0.88rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    /* Cidade badge */
+    .post-cidade {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 10px;
+      background: rgba(123,44,255,0.12);
+      border: 1px solid rgba(123,44,255,0.25);
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #c084fc;
+    }
+
+    /* Loading state */
+    .feed-loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-text);
+    }
+
+    .feed-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-text);
+    }
+
+    .feed-empty p { font-size: 0.9rem; margin-top: 12px; }
+
+    /* Divider */
+    .section-divider {
+      width: 60px;
+      height: 2px;
+      background: var(--primary-purple);
+      margin: 0 auto 40px;
+      border-radius: 2px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .lightbox.active { display: flex; animation: fadeIn 0.2s ease; }
+    .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 12px; object-fit: contain; }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+      background: none;
+      border: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .lightbox-close:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="index.html" class="logo-text" style="text-decoration:none;">SKISEASON</a>
+    </div>
+    <div class="header-center">
+      <video autoplay muted loop playsinline style="height:60px;pointer-events:none;">
+        <source src="assets/logo.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="header-right">
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </header>
+
+  <!-- Side Menu -->
+  <div class="menu-overlay" id="menu-overlay">
+    <div class="menu-close" id="menu-close">&times;</div>
+    <nav>
+      <a href="index.html" class="menu-item">Início</a>
+      <div style="height:20px;"></div>
+      <a href="comunidade.html" class="menu-item" style="color:var(--primary-purple);">Comunidade</a>
+      <div style="height:20px;"></div>
+      <a href="mailto:contato16.29@gmail.com" class="menu-item">Suporte</a>
+    </nav>
+  </div>
+
+  <main class="comunidade-main">
+
+    <!-- Hero -->
+    <div class="comunidade-hero">
+      <h1>Nossa <span>Comunidade</span></h1>
+      <p>Mostre seu estilo. Compartilhe sua foto usando os óculos Spike Season.</p>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Form -->
+    <div class="post-form-card">
+      <div class="form-inner">
+        <h3>📸 Compartilhar minha foto</h3>
+
+        <div class="form-row">
+          <div class="f-field">
+            <label>Seu nome *</label>
+            <input type="text" id="post-nome" placeholder="Ex: Lucas M.">
+          </div>
+          <div class="f-field">
+            <label>Sua cidade</label>
+            <input type="text" id="post-cidade" placeholder="Ex: São Paulo">
+          </div>
+        </div>
+
+        <div class="f-field">
+          <label>Mensagem *</label>
+          <textarea id="post-texto" rows="3" placeholder="O que você achou dos óculos? Conta pra gente!"></textarea>
+        </div>
+
+        <div class="f-field">
+          <label>Foto usando o produto *</label>
+          <div class="upload-area" id="upload-area">
+            <input type="file" id="post-foto" accept="image/*">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Toque para selecionar uma foto</div>
+            <img class="upload-preview" id="upload-preview" alt="preview">
+          </div>
+        </div>
+
+        <button class="btn-post" id="post-btn" onclick="publicarPost()">
+          Publicar na Comunidade
+        </button>
+        <div class="post-feedback" id="post-feedback"></div>
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed-section">
+      <div class="feed-header">
+        <h2>📱 Feed da Comunidade</h2>
+        <span class="feed-count" id="feed-count"></span>
+      </div>
+      <div id="feed-grid" class="feed-grid">
+        <div class="feed-loading">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHeDeCNh2UDPScqA6pL66K9sbvh7_XURQ",
+      authDomain: "spike-season.firebaseapp.com",
+      projectId: "spike-season",
+      storageBucket: "spike-season.firebasestorage.app",
+      messagingSenderId: "1097491074547",
+      appId: "1:1097491074547:web:c2a9368c9baf18dd169686"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+
+    const CLOUDINARY_CLOUD = 'dq3buzmjk';
+    const CLOUDINARY_PRESET = 'ml_default';
+
+    // ── PREVIEW ──
+    document.getElementById('post-foto').addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) return;
+      const preview = document.getElementById('upload-preview');
+      const area    = document.getElementById('upload-area');
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+      area.classList.add('has-file');
+      area.querySelector('.upload-icon').style.display = 'none';
+      area.querySelector('.upload-text').textContent = file.name;
+    });
+
+    // ── PUBLICAR ──
+    window.publicarPost = async function() {
+      const nome   = document.getElementById('post-nome').value.trim();
+      const cidade = document.getElementById('post-cidade').value.trim();
+      const texto  = document.getElementById('post-texto').value.trim();
+      const foto   = document.getElementById('post-foto').files[0];
+      const fb     = document.getElementById('post-feedback');
+      const btn    = document.getElementById('post-btn');
+
+      fb.className = 'post-feedback'; fb.textContent = '';
+
+      if (!nome)  { fb.className = 'post-feedback error'; fb.textContent = 'Informe seu nome.'; return; }
+      if (!texto) { fb.className = 'post-feedback error'; fb.textContent = 'Escreva uma mensagem.'; return; }
+      if (!foto)  { fb.className = 'post-feedback error'; fb.textContent = 'Selecione uma foto.'; return; }
+      if (foto.size > 5 * 1024 * 1024) { fb.className = 'post-feedback error'; fb.textContent = 'Foto muito grande. Máximo 5MB.'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Publicando...';
+
+      try {
+        // Upload da foto no Cloudinary
+        const formData = new FormData();
+        formData.append('file', foto);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+        formData.append('folder', 'comunidade');
+
+        const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const cloudData = await cloudRes.json();
+        const fotoURL = cloudData.secure_url;
+
+        if (!fotoURL) throw new Error('Cloudinary upload falhou');
+
+        // Salva no Firestore
+        await addDoc(collection(db, 'posts'), {
+          nome,
+          cidade: cidade || '',
+          texto,
+          fotoURL,
+          createdAt: serverTimestamp()
+        });
+
+        fb.className = 'post-feedback success';
+        fb.textContent = '✅ Post publicado! Obrigado por compartilhar.';
+
+        // Limpa form
+        document.getElementById('post-nome').value  = '';
+        document.getElementById('post-cidade').value = '';
+        document.getElementById('post-texto').value  = '';
+        document.getElementById('post-foto').value   = '';
+        document.getElementById('upload-preview').style.display = 'none';
+        document.getElementById('upload-area').classList.remove('has-file');
+        document.getElementById('upload-area').querySelector('.upload-icon').style.display = 'block';
+        document.getElementById('upload-area').querySelector('.upload-text').textContent = 'Toque para selecionar uma foto';
+
+        // Recarrega feed
+        carregarFeed();
+
+      } catch (err) {
+        console.error(err);
+        fb.className = 'post-feedback error';
+        fb.textContent = 'Erro ao publicar. Tente novamente.';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Publicar na Comunidade';
+    };
+
+    // ── CARREGAR FEED ──
+    async function carregarFeed() {
+      const grid = document.getElementById('feed-grid');
+      grid.innerHTML = '<div class="feed-loading"><div class="loading-spinner"></div></div>';
+
+      try {
+        const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          grid.innerHTML = '<div class="feed-empty"><p style="font-size:2rem;">📭</p><p>Nenhum post ainda. Seja o primeiro!</p></div>';
+          document.getElementById('feed-count').textContent = '';
+          return;
+        }
+
+        document.getElementById('feed-count').textContent = snap.size + ' post' + (snap.size > 1 ? 's' : '');
+
+        grid.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const initial = d.nome ? d.nome.charAt(0).toUpperCase() : '?';
+          const data = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '';
+
+          const card = document.createElement('div');
+          card.className = 'post-card';
+          card.innerHTML = `
+            <img class="post-img" src="${d.fotoURL}" alt="Foto de ${d.nome}" loading="lazy" onclick="openLightbox('${d.fotoURL}')">
+            <div class="post-body">
+              <div class="post-top">
+                <div class="post-avatar">${initial}</div>
+                <span class="post-name">${d.nome}</span>
+                <span class="post-date">${data}</span>
+              </div>
+              <p class="post-text">${d.texto}</p>
+              ${d.cidade ? `<span class="post-cidade">📍 ${d.cidade}</span>` : ''}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<div class="feed-empty"><p>Erro ao carregar posts.</p></div>';
+      }
+    }
+
+    carregarFeed();
+  </script>
+
+  <script>
+    // ── LIGHTBOX ──
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ── HAMBURGER ──
+    const hamburger = document.getElementById('hamburger');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const menuClose = document.getElementById('menu-close');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      menuOverlay.classList.toggle('active');
+    });
+    menuClose.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      menuOverlay.classList.remove('active');
+    });
+  </script>
+
+</body>
+</html>
