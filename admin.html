@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -17,7 +16,7 @@
     :root {
       --purple: #7B2FBE;
       --purple-light: #9340e0;
-      --purple-dim: rgba(123, 47, 190, 0.15);
+      --purple-dim: rgba(123,47,190,0.15);
       --purple-text: #c084fc;
       --bg: #050505;
       --card: #0f0f0f;
@@ -31,13 +30,7 @@
       --red: #ef4444;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      font-family: 'Inter', sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
 
     body {
       background: var(--bg);
@@ -48,25 +41,12 @@
     }
 
     @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* ── HEADER ── */
@@ -84,19 +64,8 @@
       padding: 14px 20px;
     }
 
-    .logo {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .logo span {
-      color: var(--purple);
-    }
+    .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.15em; color: #fff; display: flex; align-items: center; gap: 4px; }
+    .logo span { color: var(--purple); }
 
     .logout-btn {
       background: none;
@@ -109,18 +78,12 @@
       justify-content: center;
       transition: color 0.2s, transform 0.2s;
     }
-
-    .logout-btn:active {
-      color: var(--text);
-      transform: scale(0.9);
-    }
+    .logout-btn:active { color: var(--text); transform: scale(0.9); }
 
     /* ── BOTTOM NAV ── */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       background: rgba(5, 5, 5, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -129,7 +92,6 @@
       z-index: 100;
       padding-bottom: env(safe-area-inset-bottom);
     }
-
     .nav-item {
       flex: 1;
       display: flex;
@@ -147,35 +109,14 @@
       text-transform: uppercase;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    .nav-item .nav-icon {
-      font-size: 1.5rem;
-      transition: transform 0.2s, color 0.2s;
-    }
-
-    .nav-item:active .nav-icon {
-      transform: scale(0.85);
-    }
-
-    .nav-item.active {
-      color: var(--purple-text);
-    }
-
-    .nav-item.active .nav-icon {
-      color: var(--purple);
-      transform: translateY(-2px);
-    }
+    .nav-item .nav-icon { font-size: 1.5rem; transition: transform 0.2s, color 0.2s; }
+    .nav-item:active .nav-icon { transform: scale(0.85); }
+    .nav-item.active { color: var(--purple-text); }
+    .nav-item.active .nav-icon { color: var(--purple); transform: translateY(-2px); }
 
     /* ── CONTENT ── */
-    .page {
-      display: none;
-      padding: 20px 16px;
-      animation: fadeUp 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    }
-
-    .page.active {
-      display: block;
-    }
+    .page { display: none; padding: 20px 16px; animation: fadeUp 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .page.active { display: block; }
 
     /* ── CARDS ── */
     .card {
@@ -184,9 +125,8 @@
       border-radius: 16px;
       padding: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-
     .card-title {
       font-size: 0.75rem;
       font-weight: 600;
@@ -200,60 +140,24 @@
     }
 
     /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
       transition: transform 0.2s;
     }
-
-    .stat-card:active {
-      transform: scale(0.97);
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--purple-text);
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 0.65rem;
-      color: var(--muted);
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-top: 8px;
-    }
+    .stat-card:active { transform: scale(0.97); }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--purple-text); line-height: 1; }
+    .stat-label { font-size: 0.65rem; color: var(--muted); font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 8px; }
 
     /* ── FIELDS ── */
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .field input,
-    .field select {
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .field input, .field select {
       width: 100%;
       padding: 14px 16px;
       background: var(--input);
@@ -266,34 +170,12 @@
       appearance: none;
       transition: all 0.2s ease;
     }
+    .field input:focus, .field select:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(123,47,190,0.15); }
+    .field input::placeholder { color: #444; }
+    .field select option { background: var(--input); }
 
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(123, 47, 190, 0.15);
-    }
-
-    .field input::placeholder {
-      color: #444;
-    }
-
-    .field select option {
-      background: var(--input);
-    }
-
-    .select-wrapper {
-      position: relative;
-    }
-
-    .select-wrapper::after {
-      content: '▾';
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--purple);
-      pointer-events: none;
-    }
+    .select-wrapper { position: relative; }
+    .select-wrapper::after { content: '▾'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--purple); pointer-events: none; }
 
     /* ── BUTTONS ── */
     .btn {
@@ -313,191 +195,43 @@
       justify-content: center;
       gap: 8px;
       transition: all 0.2s;
-      box-shadow: 0 4px 15px rgba(123, 47, 190, 0.3);
+      box-shadow: 0 4px 15px rgba(123,47,190,0.3);
       -webkit-tap-highlight-color: transparent;
     }
-
-    .btn:active {
-      background: var(--purple-light);
-      transform: translateY(2px);
-      box-shadow: 0 2px 8px rgba(123, 47, 190, 0.2);
-    }
-
-    .btn:disabled {
-      background: #2a2a2a;
-      color: #555;
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-sm {
-      width: auto;
-      padding: 10px 18px;
-      font-size: 0.75rem;
-      border-radius: 10px;
-    }
-
-    .btn-ghost {
-      background: var(--border);
-      box-shadow: none;
-      color: var(--text);
-    }
-
-    .btn-ghost:active {
-      background: #2a2a2a;
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.1);
-      color: #f87171;
-      border: 1px solid var(--red);
-      box-shadow: none;
-    }
-
-    .btn-danger:active {
-      background: rgba(239, 68, 68, 0.2);
-    }
+    .btn:active { background: var(--purple-light); transform: translateY(2px); box-shadow: 0 2px 8px rgba(123,47,190,0.2); }
+    .btn:disabled { background: #2a2a2a; color: #555; box-shadow: none; cursor: not-allowed; transform: none; }
+    .btn-sm { width: auto; padding: 10px 18px; font-size: 0.75rem; border-radius: 10px; }
+    .btn-ghost { background: var(--border); box-shadow: none; color: var(--text); }
+    .btn-ghost:active { background: #2a2a2a; }
+    .btn-danger { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid var(--red); box-shadow: none; }
+    .btn-danger:active { background: rgba(239,68,68,0.2); }
 
     /* ── FEEDBACK ── */
-    .feedback {
-      margin-top: 14px;
-      padding: 13px 16px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      text-align: center;
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .feedback.success {
-      background: var(--purple-dim);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      color: var(--purple-text);
-      display: block;
-    }
-
-    .feedback.error {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #f87171;
-      display: block;
-    }
-
-    .feedback.info {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: var(--text);
-      display: block;
-    }
+    .feedback { margin-top: 14px; padding: 13px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 500; text-align: center; display: none; animation: fadeIn 0.3s ease; }
+    .feedback.success { background: var(--purple-dim); border: 1px solid rgba(123,47,190,0.3); color: var(--purple-text); display: block; }
+    .feedback.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; display: block; }
+    .feedback.info { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); display: block; }
 
     /* ── BADGES ── */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    .badge i {
-      font-size: 1rem;
-    }
-
-    .badge-pendente {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      color: var(--yellow);
-    }
-
-    .badge-enviado {
-      background: var(--purple-dim);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      color: var(--purple-text);
-    }
-
-    .badge-entregue {
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      color: var(--green);
-    }
-
-    .badge-confirmado {
-      background: var(--purple-dim);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      color: var(--purple-text);
-    }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 20px; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em; white-space: nowrap; }
+    .badge i { font-size: 1rem; }
+    .badge-pendente { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: var(--yellow); }
+    .badge-enviado  { background: var(--purple-dim); border: 1px solid rgba(123,47,190,0.3); color: var(--purple-text); }
+    .badge-entregue { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+    .badge-confirmado { background: var(--purple-dim); border: 1px solid rgba(123,47,190,0.3); color: var(--purple-text); }
 
     /* ── STATUS INDICATOR ── */
-    .status-indicator {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-align: center;
-      margin-bottom: 16px;
-      display: none;
-      animation: fadeIn 0.3s ease;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-indicator i {
-      font-size: 1.2rem;
-    }
-
-    .status-pendente {
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      color: var(--yellow);
-      display: flex;
-    }
-
-    .status-enviado {
-      background: var(--purple-dim);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      color: var(--purple-text);
-      display: flex;
-    }
-
-    .status-entregue {
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      color: var(--green);
-      display: flex;
-    }
-
-    .status-confirmado {
-      background: var(--purple-dim);
-      border: 1px solid rgba(123, 47, 190, 0.3);
-      color: var(--purple-text);
-      display: flex;
-    }
-
-    #rastreio-field {
-      display: none;
-      animation: fadeUp 0.3s ease;
-    }
+    .status-indicator { width: 100%; padding: 12px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-align: center; margin-bottom: 16px; display: none; animation: fadeIn 0.3s ease; justify-content: center; align-items: center; gap: 8px; }
+    .status-indicator i { font-size: 1.2rem; }
+    .status-pendente   { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--yellow); display: flex; }
+    .status-enviado    { background: var(--purple-dim); border: 1px solid rgba(123,47,190,0.3); color: var(--purple-text); display: flex; }
+    .status-entregue   { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--green); display: flex; }
+    .status-confirmado { background: var(--purple-dim); border: 1px solid rgba(123,47,190,0.3); color: var(--purple-text); display: flex; }
+    #rastreio-field { display: none; animation: fadeUp 0.3s ease; }
 
     /* ── SEARCH ROW ── */
-    .search-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    .search-row .field {
-      flex: 1;
-      margin: 0;
-    }
+    .search-row { display: flex; gap: 10px; align-items: flex-end; }
+    .search-row .field { flex: 1; margin: 0; }
 
     /* ── ORDER CARDS (mobile) ── */
     .order-card {
@@ -509,202 +243,45 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-
-    .order-card:active {
-      transform: scale(0.98);
-      border-color: var(--purple);
-      background: var(--card);
-    }
-
-    .order-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .order-code {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--purple-text);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .order-name {
-      font-size: 0.88rem;
-      color: var(--text);
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    .order-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-    }
-
-    .order-total {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .order-date {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
+    .order-card:active { transform: scale(0.98); border-color: var(--purple); background: var(--card); }
+    .order-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .order-code { font-size: 0.95rem; font-weight: 700; color: var(--purple-text); display: flex; align-items: center; gap: 6px; }
+    .order-name { font-size: 0.88rem; color: var(--text); margin-top: 4px; font-weight: 500; }
+    .order-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .order-total { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .order-date { font-size: 0.75rem; color: var(--muted); }
 
     /* ── PEDIDO DETALHES ── */
-    .pedido-card {
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      margin-top: 16px;
-      display: none;
-      animation: fadeUp 0.3s ease forwards;
-    }
-
-    .pedido-card.visible {
-      display: block;
-    }
-
-    .pedido-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
-      gap: 12px;
-    }
-
-    .pedido-row:last-of-type {
-      border-bottom: none;
-    }
-
-    .pedido-row span:first-child {
-      color: var(--muted);
-      white-space: nowrap;
-      flex-shrink: 0;
-      font-weight: 500;
-    }
-
-    .pedido-row span:last-child {
-      color: var(--text);
-      font-weight: 500;
-      text-align: right;
-      word-break: break-word;
-    }
+    .pedido-card { background: var(--input); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-top: 16px; display: none; animation: fadeUp 0.3s ease forwards; }
+    .pedido-card.visible { display: block; }
+    .pedido-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; gap: 12px; }
+    .pedido-row:last-of-type { border-bottom: none; }
+    .pedido-row span:first-child { color: var(--muted); white-space: nowrap; flex-shrink: 0; font-weight: 500; }
+    .pedido-row span:last-child { color: var(--text); font-weight: 500; text-align: right; word-break: break-word; }
 
     /* ── LOADING ── */
-    .loading {
-      text-align: center;
-      color: #666;
-      padding: 60px 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .loading-spinner {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      border: 2px solid var(--border);
-      border-top-color: var(--purple);
-      border-radius: 50%;
-      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      margin-bottom: 12px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    .loading { text-align: center; color: #666; padding: 60px 20px; font-size: 0.85rem; font-weight: 500; }
+    .loading-spinner { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; margin-bottom: 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── LOGIN ── */
-    #login-screen {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-      animation: fadeIn 0.4s ease;
-    }
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; animation: fadeIn 0.4s ease; }
+    .login-box { width: 100%; max-width: 360px; }
+    .login-header { text-align: center; margin-bottom: 36px; }
+    .login-logo { font-size: 2.8rem; font-weight: 700; letter-spacing: 0.15em; color: #fff; }
+    .login-logo span { color: var(--purple); }
+    .login-sub { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
 
-    .login-box {
-      width: 100%;
-      max-width: 360px;
-    }
-
-    .login-header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .login-logo {
-      font-size: 2.8rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: #fff;
-    }
-
-    .login-logo span {
-      color: var(--purple);
-    }
-
-    .login-sub {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    #admin-screen {
-      display: none;
-    }
+    #admin-screen { display: none; }
 
     /* ── EMPTY STATE ── */
-    .empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-      animation: fadeIn 0.4s ease;
-    }
-
-    .empty-icon {
-      font-size: 3rem;
-      margin-bottom: 16px;
-      color: var(--border);
-    }
-
-    .empty p {
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); animation: fadeIn 0.4s ease; }
+    .empty-icon { font-size: 3rem; margin-bottom: 16px; color: var(--border); }
+    .empty p { font-size: 0.9rem; font-weight: 500; }
 
     /* ── FILTER PILLS ── */
-    .filter-pills {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: none;
-    }
-
-    .filter-pills::-webkit-scrollbar {
-      display: none;
-    }
-
+    .filter-pills { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+    .filter-pills::-webkit-scrollbar { display: none; }
     .pill {
       flex-shrink: 0;
       padding: 8px 16px;
@@ -722,266 +299,228 @@
       align-items: center;
       gap: 6px;
     }
-
-    .pill i {
-      font-size: 1.1rem;
-    }
-
-    .pill.active {
-      background: var(--purple-dim);
-      border-color: var(--purple);
-      color: var(--purple-text);
-      transform: scale(1.05);
-    }
+    .pill i { font-size: 1.1rem; }
+    .pill.active { background: var(--purple-dim); border-color: var(--purple); color: var(--purple-text); transform: scale(1.05); }
 
     /* ── SECTION LABEL ── */
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .section-label i {
-      font-size: 1.1rem;
-      color: var(--purple);
-    }
+    .section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+    .section-label i { font-size: 1.1rem; color: var(--purple); }
   </style>
 </head>
-
 <body>
 
-  <!-- ═══════════════ LOGIN ═══════════════ -->
-  <div id="login-screen">
-    <div class="login-box">
-      <div class="login-header">
-        <div class="login-logo">16<span>*</span>29</div>
-        <div class="login-sub">Área Administrativa</div>
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-header">
+      <div class="login-logo">16<span>*</span>29</div>
+      <div class="login-sub">Área Administrativa</div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="senha-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
       </div>
+      <button class="btn" onclick="login()">Entrar</button>
+      <div class="feedback" id="login-feedback"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN ═══════════════ -->
+<div id="admin-screen">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo">16<span>*</span>29 <i class="ph ph-crown" style="font-size: 1.2rem; color: var(--purple);"></i></div>
+    <button class="logout-btn" onclick="location.reload()" aria-label="Sair">
+      <i class="ph ph-sign-out"></i>
+    </button>
+  </div>
+
+  <!-- ── PAGE: HOME ── -->
+  <div class="page active" id="page-home">
+    <div style="padding-top:16px;">
+      <div class="section-label"><i class="ph ph-chart-line-up"></i> Resumo</div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">—</div>
+          <div class="stat-label">Total Pedidos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-pendente">—</div>
+          <div class="stat-label">Pendentes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-enviado">—</div>
+          <div class="stat-label">Enviados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-entregue">—</div>
+          <div class="stat-label">Entregues</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;"><i class="ph ph-clock-counter-clockwise"></i> Últimos Pedidos</div>
+      <div id="recent-orders"><div class="loading"><div class="loading-spinner"></div><br>Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: PEDIDOS ── -->
+  <div class="page" id="page-pedidos">
+    <div style="padding-top:16px;">
+      <div class="filter-pills" id="filter-pills">
+        <div class="pill active" onclick="filtrarPedidos('todos',this)"><i class="ph ph-list-dashes"></i> Todos</div>
+        <div class="pill" onclick="filtrarPedidos('Pendente',this)"><i class="ph ph-hourglass-high"></i> Pendente</div>
+        <div class="pill" onclick="filtrarPedidos('Enviado',this)"><i class="ph ph-package"></i> Enviado</div>
+        <div class="pill" onclick="filtrarPedidos('Entregue',this)"><i class="ph ph-check-circle"></i> Entregue</div>
+      </div>
+      <div id="all-orders"><div class="loading"><div class="loading-spinner"></div><br>Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: BUSCA ── -->
+  <div class="page" id="page-busca">
+    <div style="padding-top:16px;">
       <div class="card">
+        <div class="card-title"><i class="ph ph-magnifying-glass" style="font-size: 1.2rem;"></i> Buscar Pedido</div>
+        <div class="search-row">
+          <div class="field">
+            <input type="text" id="busca-codigo" placeholder="SS-2025-0001" style="text-transform:uppercase;letter-spacing:0.05em;" onkeydown="if(event.key==='Enter') buscarPedido()">
+          </div>
+          <button class="btn btn-sm" onclick="buscarPedido()" style="height:50px;margin-bottom:0;">Buscar</button>
+        </div>
+        <div class="feedback" id="busca-feedback"></div>
+        <div class="pedido-card" id="pedido-encontrado">
+          <div id="pedido-detalhes"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: EMAIL ── -->
+  <div class="page" id="page-email">
+    <div style="padding-top:16px;">
+      <div class="card">
+        <div class="card-title"><i class="ph ph-paper-plane-tilt" style="font-size: 1.2rem;"></i> Atualização de Status</div>
+
         <div class="field">
-          <label>Senha</label>
-          <input type="password" id="senha-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
+          <label>Nome do Cliente</label>
+          <input type="text" id="cliente-nome" placeholder="Ex: João Silva">
         </div>
-        <button class="btn" onclick="login()">Entrar</button>
-        <div class="feedback" id="login-feedback"></div>
+        <div class="field">
+          <label>E-mail do Cliente</label>
+          <input type="email" id="cliente-email" placeholder="cliente@gmail.com">
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <div class="select-wrapper">
+            <select id="status-select" onchange="handleStatusChange()">
+              <option value="">Selecione...</option>
+              <option value="enviado">Enviado / Postado</option>
+              <option value="entregue">Entregue</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="status-indicator" id="status-indicator"></div>
+
+        <div class="field" id="rastreio-field">
+          <label>Código de Rastreio</label>
+          <input type="text" id="codigo-rastreio" placeholder="Ex: BR123456789BR" style="letter-spacing:0.08em;">
+        </div>
+
+        <button class="btn" id="send-btn" onclick="enviarStatus()">
+          <i class="ph ph-envelope-simple" style="display:inline-block;vertical-align:middle;font-size:1.1rem;margin-right:6px;margin-top:-2px;"></i>Enviar E-mail
+        </button>
+        <div class="feedback" id="send-feedback"></div>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════════ ADMIN ═══════════════ -->
-  <div id="admin-screen">
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="bn-home" onclick="navTo('home')">
+      <i class="ph ph-squares-four nav-icon"></i>Dashboard
+    </button>
+    <button class="nav-item" id="bn-pedidos" onclick="navTo('pedidos')">
+      <i class="ph ph-package nav-icon"></i>Pedidos
+    </button>
+    <button class="nav-item" id="bn-busca" onclick="navTo('busca')">
+      <i class="ph ph-magnifying-glass nav-icon"></i>Buscar
+    </button>
+    <button class="nav-item" id="bn-email" onclick="navTo('email')">
+      <i class="ph ph-paper-plane-tilt nav-icon"></i>Status
+    </button>
+  </nav>
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <div class="logo">16<span>*</span>29 <i class="ph ph-crown" style="font-size: 1.2rem; color: var(--purple);"></i>
-      </div>
-      <button class="logout-btn" onclick="location.reload()" aria-label="Sair">
-        <i class="ph ph-sign-out"></i>
-      </button>
-    </div>
+</div>
 
-    <!-- ── PAGE: HOME ── -->
-    <div class="page active" id="page-home">
-      <div style="padding-top:16px;">
-        <div class="section-label"><i class="ph ph-chart-line-up"></i> Resumo</div>
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-value" id="stat-total">—</div>
-            <div class="stat-label">Total Pedidos</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-pendente">—</div>
-            <div class="stat-label">Pendentes</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-enviado">—</div>
-            <div class="stat-label">Enviados</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-entregue">—</div>
-            <div class="stat-label">Entregues</div>
-          </div>
-        </div>
+<script>
+  const SENHA_HASH = 'da5ce85c28b6d3e05cfb00d164bb470065856714cb28da81b3106466fb4c2de5';
+  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwTMyWKVyeSoh0YbQupIniFom7PTj0LeEhGxTRyePiTBbBW__LfWuNwPRp_5ng7og2wTg/exec';
 
-        <div class="section-label" style="margin-top:8px;"><i class="ph ph-clock-counter-clockwise"></i> Últimos Pedidos
-        </div>
-        <div id="recent-orders">
-          <div class="loading">
-            <div class="loading-spinner"></div><br>Carregando...
-          </div>
-        </div>
-      </div>
-    </div>
+  const STATUS_CONFIG = {
+    confirmado: { publicKey: '74K-UVW-EQCEZ0BET', serviceId: 'service_0oibu1g',  templateId: 'template_qskgzio', label: '<i class="ph ph-shopping-cart"></i> Compra Confirmada', css: 'status-confirmado', rastreio: false },
+    pendente:   { publicKey: 'ryP4Z5DJ3339nHr61', serviceId: 'service_iac4rqs',  templateId: 'template_4zfn6oa',  label: '<i class="ph ph-hourglass-high"></i> Pendente',          css: 'status-pendente',   rastreio: false },
+    enviado:    { publicKey: '74K-UVW-EQCEZ0BET', serviceId: 'service_0oibu1g',  templateId: 'template_0nip422',  label: '<i class="ph ph-package"></i> Enviado / Postado', css: 'status-enviado',    rastreio: true  },
+    entregue:   { publicKey: 'ryP4Z5DJ3339nHr61', serviceId: 'service_90a7nrp',  templateId: 'template_i6ryo0f',  label: '<i class="ph ph-check-circle"></i> Entregue',           css: 'status-entregue',   rastreio: false }
+  };
 
-    <!-- ── PAGE: PEDIDOS ── -->
-    <div class="page" id="page-pedidos">
-      <div style="padding-top:16px;">
-        <div class="filter-pills" id="filter-pills">
-          <div class="pill active" onclick="filtrarPedidos('todos',this)"><i class="ph ph-list-dashes"></i> Todos</div>
-          <div class="pill" onclick="filtrarPedidos('Pendente',this)"><i class="ph ph-hourglass-high"></i> Pendente
-          </div>
-          <div class="pill" onclick="filtrarPedidos('Enviado',this)"><i class="ph ph-package"></i> Enviado</div>
-          <div class="pill" onclick="filtrarPedidos('Entregue',this)"><i class="ph ph-check-circle"></i> Entregue</div>
-        </div>
-        <div id="all-orders">
-          <div class="loading">
-            <div class="loading-spinner"></div><br>Carregando...
-          </div>
-        </div>
-      </div>
-    </div>
+  let allPedidos = [];
 
-    <!-- ── PAGE: BUSCA ── -->
-    <div class="page" id="page-busca">
-      <div style="padding-top:16px;">
-        <div class="card">
-          <div class="card-title"><i class="ph ph-magnifying-glass" style="font-size: 1.2rem;"></i> Buscar Pedido</div>
-          <div class="search-row">
-            <div class="field">
-              <input type="text" id="busca-codigo" placeholder="SS-2025-0001"
-                style="text-transform:uppercase;letter-spacing:0.05em;"
-                onkeydown="if(event.key==='Enter') buscarPedido()">
-            </div>
-            <button class="btn btn-sm" onclick="buscarPedido()" style="height:50px;margin-bottom:0;">Buscar</button>
-          </div>
-          <div class="feedback" id="busca-feedback"></div>
-          <div class="pedido-card" id="pedido-encontrado">
-            <div id="pedido-detalhes"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PAGE: EMAIL ── -->
-    <div class="page" id="page-email">
-      <div style="padding-top:16px;">
-        <div class="card">
-          <div class="card-title"><i class="ph ph-paper-plane-tilt" style="font-size: 1.2rem;"></i> Atualização de
-            Status</div>
-
-          <div class="field">
-            <label>Nome do Cliente</label>
-            <input type="text" id="cliente-nome" placeholder="Ex: João Silva">
-          </div>
-          <div class="field">
-            <label>E-mail do Cliente</label>
-            <input type="email" id="cliente-email" placeholder="cliente@gmail.com">
-          </div>
-          <div class="field">
-            <label>Status</label>
-            <div class="select-wrapper">
-              <select id="status-select" onchange="handleStatusChange()">
-                <option value="">Selecione...</option>
-                <option value="enviado">Enviado / Postado</option>
-                <option value="entregue">Entregue</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="status-indicator" id="status-indicator"></div>
-
-          <div class="field" id="rastreio-field">
-            <label>Código de Rastreio</label>
-            <input type="text" id="codigo-rastreio" placeholder="Ex: BR123456789BR" style="letter-spacing:0.08em;">
-          </div>
-
-          <button class="btn" id="send-btn" onclick="enviarStatus()">
-            <i class="ph ph-envelope-simple"
-              style="display:inline-block;vertical-align:middle;font-size:1.1rem;margin-right:6px;margin-top:-2px;"></i>Enviar
-            E-mail
-          </button>
-          <div class="feedback" id="send-feedback"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Nav -->
-    <nav class="bottom-nav">
-      <button class="nav-item active" id="bn-home" onclick="navTo('home')">
-        <i class="ph ph-squares-four nav-icon"></i>Dashboard
-      </button>
-      <button class="nav-item" id="bn-pedidos" onclick="navTo('pedidos')">
-        <i class="ph ph-package nav-icon"></i>Pedidos
-      </button>
-      <button class="nav-item" id="bn-busca" onclick="navTo('busca')">
-        <i class="ph ph-magnifying-glass nav-icon"></i>Buscar
-      </button>
-      <button class="nav-item" id="bn-email" onclick="navTo('email')">
-        <i class="ph ph-paper-plane-tilt nav-icon"></i>Status
-      </button>
-    </nav>
-
-  </div>
-
-  <script>
-    const SENHA = '1629admin';
-    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwTMyWKVyeSoh0YbQupIniFom7PTj0LeEhGxTRyePiTBbBW__LfWuNwPRp_5ng7og2wTg/exec';
-
-    const STATUS_CONFIG = {
-      confirmado: { publicKey: '74K-UVW-EQCEZ0BET', serviceId: 'service_0oibu1g', templateId: 'template_qskgzio', label: '<i class="ph ph-shopping-cart"></i> Compra Confirmada', css: 'status-confirmado', rastreio: false },
-      pendente: { publicKey: 'ryP4Z5DJ3339nHr61', serviceId: 'service_iac4rqs', templateId: 'template_4zfn6oa', label: '<i class="ph ph-hourglass-high"></i> Pendente', css: 'status-pendente', rastreio: false },
-      enviado: { publicKey: '74K-UVW-EQCEZ0BET', serviceId: 'service_0oibu1g', templateId: 'template_0nip422', label: '<i class="ph ph-package"></i> Enviado / Postado', css: 'status-enviado', rastreio: true },
-      entregue: { publicKey: 'ryP4Z5DJ3339nHr61', serviceId: 'service_90a7nrp', templateId: 'template_i6ryo0f', label: '<i class="ph ph-check-circle"></i> Entregue', css: 'status-entregue', rastreio: false }
-    };
-
-    let allPedidos = [];
-
-    // ── LOGIN ──
-    function login() {
-      const val = document.getElementById('senha-input').value;
-      const fb = document.getElementById('login-feedback');
-      if (val === SENHA) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('admin-screen').style.display = 'block';
-        carregarTudo();
-      } else {
-        fb.className = 'feedback error';
-        fb.textContent = 'Senha incorreta.';
-        document.getElementById('senha-input').value = '';
-      }
+  // ── LOGIN ──
+  async function login() {
+    const val = document.getElementById('senha-input').value;
+    const fb  = document.getElementById('login-feedback');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
+    const hexHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
+    if (hexHash === SENHA_HASH) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+      carregarTudo();
+    } else {
+      fb.className = 'feedback error';
+      fb.textContent = 'Senha incorreta.';
+      document.getElementById('senha-input').value = '';
     }
+  }
 
-    // ── NAVIGATION ──
-    const pages = ['home', 'pedidos', 'busca', 'email'];
-    function navTo(page) {
-      pages.forEach(p => {
-        document.getElementById('page-' + p).classList.toggle('active', p === page);
-        document.getElementById('bn-' + p)?.classList.toggle('active', p === page);
-      });
+  // ── NAVIGATION ──
+  const pages = ['home','pedidos','busca','email'];
+  function navTo(page) {
+    pages.forEach(p => {
+      document.getElementById('page-' + p).classList.toggle('active', p === page);
+      document.getElementById('bn-' + p)?.classList.toggle('active', p === page);
+    });
+  }
+
+  // ── LOAD DATA ──
+  async function carregarTudo() {
+    try {
+      const res = await fetch(SHEETS_URL);
+      const data = await res.json();
+      allPedidos = data.success && data.pedidos ? data.pedidos : [];
+      renderStats();
+      renderRecent();
+      renderAll('todos');
+    } catch {
+      allPedidos = [];
+      renderStats();
+      document.getElementById('recent-orders').innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-warning"></i></div><p>Erro ao carregar pedidos.</p></div>';
+      document.getElementById('all-orders').innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-warning"></i></div><p>Erro ao carregar pedidos.</p></div>';
     }
+  }
 
-    // ── LOAD DATA ──
-    async function carregarTudo() {
-      try {
-        const res = await fetch(SHEETS_URL);
-        const data = await res.json();
-        allPedidos = data.success && data.pedidos ? data.pedidos : [];
-        renderStats();
-        renderRecent();
-        renderAll('todos');
-      } catch {
-        allPedidos = [];
-        renderStats();
-        document.getElementById('recent-orders').innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-warning"></i></div><p>Erro ao carregar pedidos.</p></div>';
-        document.getElementById('all-orders').innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-warning"></i></div><p>Erro ao carregar pedidos.</p></div>';
-      }
-    }
+  function renderStats() {
+    document.getElementById('stat-total').textContent    = allPedidos.length;
+    document.getElementById('stat-pendente').textContent = allPedidos.filter(p => p['Status'] === 'Pendente').length;
+    document.getElementById('stat-enviado').textContent  = allPedidos.filter(p => p['Status'] === 'Enviado').length;
+    document.getElementById('stat-entregue').textContent = allPedidos.filter(p => p['Status'] === 'Entregue').length;
+  }
 
-    function renderStats() {
-      document.getElementById('stat-total').textContent = allPedidos.length;
-      document.getElementById('stat-pendente').textContent = allPedidos.filter(p => p['Status'] === 'Pendente').length;
-      document.getElementById('stat-enviado').textContent = allPedidos.filter(p => p['Status'] === 'Enviado').length;
-      document.getElementById('stat-entregue').textContent = allPedidos.filter(p => p['Status'] === 'Entregue').length;
-    }
-
-    function orderCardHTML(p) {
-      return `
+  function orderCardHTML(p) {
+    return `
       <div class="order-card" onclick="abrirPedido('${p['Código']}')">
         <div class="order-card-top">
           <div>
@@ -995,60 +534,60 @@
           <span class="order-date">${p['Data'] || '-'}</span>
         </div>
       </div>`;
+  }
+
+  function renderRecent() {
+    const el = document.getElementById('recent-orders');
+    const recent = [...allPedidos].reverse().slice(0, 5);
+    if (!recent.length) { el.innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-mailbox"></i></div><p>Nenhum pedido ainda.</p></div>'; return; }
+    el.innerHTML = recent.map(orderCardHTML).join('');
+  }
+
+  function renderAll(filtro) {
+    const el = document.getElementById('all-orders');
+    const list = filtro === 'todos' ? [...allPedidos].reverse() : [...allPedidos].reverse().filter(p => p['Status'] === filtro);
+    if (!list.length) { el.innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-mailbox"></i></div><p>Nenhum pedido encontrado.</p></div>'; return; }
+    el.innerHTML = list.map(orderCardHTML).join('');
+  }
+
+  function filtrarPedidos(filtro, el) {
+    document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    renderAll(filtro);
+  }
+
+  function abrirPedido(codigo) {
+    navTo('busca');
+    document.getElementById('busca-codigo').value = codigo;
+    buscarPedido();
+  }
+
+  // ── BUSCAR ──
+  async function buscarPedido() {
+    const codigo = document.getElementById('busca-codigo').value.trim().toUpperCase();
+    const fb   = document.getElementById('busca-feedback');
+    const card = document.getElementById('pedido-encontrado');
+    fb.className = 'feedback'; fb.textContent = '';
+    card.classList.remove('visible');
+
+    if (!codigo) { fb.className = 'feedback error'; fb.textContent = 'Digite um código.'; return; }
+    fb.className = 'feedback info'; fb.textContent = 'Buscando...';
+
+    // Busca local primeiro (mais rápido)
+    let p = allPedidos.find(x => x['Código'] === codigo);
+
+    if (!p) {
+      try {
+        const res = await fetch(`${SHEETS_URL}?codigo=${codigo}`);
+        const data = await res.json();
+        if (data.success) p = data.pedido;
+      } catch {}
     }
 
-    function renderRecent() {
-      const el = document.getElementById('recent-orders');
-      const recent = [...allPedidos].reverse().slice(0, 5);
-      if (!recent.length) { el.innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-mailbox"></i></div><p>Nenhum pedido ainda.</p></div>'; return; }
-      el.innerHTML = recent.map(orderCardHTML).join('');
-    }
+    if (!p) { fb.className = 'feedback error'; fb.textContent = 'Pedido não encontrado.'; return; }
 
-    function renderAll(filtro) {
-      const el = document.getElementById('all-orders');
-      const list = filtro === 'todos' ? [...allPedidos].reverse() : [...allPedidos].reverse().filter(p => p['Status'] === filtro);
-      if (!list.length) { el.innerHTML = '<div class="empty"><div class="empty-icon"><i class="ph ph-mailbox"></i></div><p>Nenhum pedido encontrado.</p></div>'; return; }
-      el.innerHTML = list.map(orderCardHTML).join('');
-    }
-
-    function filtrarPedidos(filtro, el) {
-      document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
-      el.classList.add('active');
-      renderAll(filtro);
-    }
-
-    function abrirPedido(codigo) {
-      navTo('busca');
-      document.getElementById('busca-codigo').value = codigo;
-      buscarPedido();
-    }
-
-    // ── BUSCAR ──
-    async function buscarPedido() {
-      const codigo = document.getElementById('busca-codigo').value.trim().toUpperCase();
-      const fb = document.getElementById('busca-feedback');
-      const card = document.getElementById('pedido-encontrado');
-      fb.className = 'feedback'; fb.textContent = '';
-      card.classList.remove('visible');
-
-      if (!codigo) { fb.className = 'feedback error'; fb.textContent = 'Digite um código.'; return; }
-      fb.className = 'feedback info'; fb.textContent = 'Buscando...';
-
-      // Busca local primeiro (mais rápido)
-      let p = allPedidos.find(x => x['Código'] === codigo);
-
-      if (!p) {
-        try {
-          const res = await fetch(`${SHEETS_URL}?codigo=${codigo}`);
-          const data = await res.json();
-          if (data.success) p = data.pedido;
-        } catch { }
-      }
-
-      if (!p) { fb.className = 'feedback error'; fb.textContent = 'Pedido não encontrado.'; return; }
-
-      fb.className = 'feedback success'; fb.innerHTML = '<i class="ph ph-check-circle"></i> Pedido encontrado!';
-      document.getElementById('pedido-detalhes').innerHTML = `
+    fb.className = 'feedback success'; fb.innerHTML = '<i class="ph ph-check-circle"></i> Pedido encontrado!';
+    document.getElementById('pedido-detalhes').innerHTML = `
       <div class="pedido-row"><span>Código</span><span style="color:var(--purple-text);font-weight:700;">${p['Código']}</span></div>
       <div class="pedido-row"><span>Data</span><span>${p['Data']}</span></div>
       <div class="pedido-row"><span>Nome</span><span>${p['Nome']}</span></div>
@@ -1059,124 +598,123 @@
       <div class="pedido-row"><span>Total</span><span>${p['Total']}</span></div>
       <div class="pedido-row"><span>Status</span><span>${badgeHTML(p['Status'])}</span></div>
       <div style="margin-top:16px;display:flex;gap:10px;">
-        <button class="btn btn-sm" style="flex:1;" onclick="preencherEmail('${p['Nome'].replace(/'/g, "\\'")}','${p['Email']}')"><i class="ph ph-paper-plane-tilt" style="display:inline-block;vertical-align:middle;margin-right:4px;"></i> Notificar</button>
+        <button class="btn btn-sm" style="flex:1;" onclick="preencherEmail('${p['Nome'].replace(/'/g,"\\'")}','${p['Email']}')"><i class="ph ph-paper-plane-tilt" style="display:inline-block;vertical-align:middle;margin-right:4px;"></i> Notificar</button>
         <button class="btn btn-sm btn-danger" onclick="cancelarPedido('${p['Código']}')"><i class="ph ph-trash" style="display:inline-block;vertical-align:middle;margin-right:4px;"></i> Cancelar</button>
       </div>
     `;
-      card.classList.add('visible');
-    }
+    card.classList.add('visible');
+  }
 
-    function preencherEmail(nome, email) {
-      navTo('email');
-      document.getElementById('cliente-nome').value = nome;
-      document.getElementById('cliente-email').value = email;
+  function preencherEmail(nome, email) {
+    navTo('email');
+    document.getElementById('cliente-nome').value  = nome;
+    document.getElementById('cliente-email').value = email;
+    document.getElementById('status-select').value = '';
+    handleStatusChange();
+  }
+
+  // ── STATUS ──
+  function handleStatusChange() {
+    const status = document.getElementById('status-select').value;
+    const rf  = document.getElementById('rastreio-field');
+    const ind = document.getElementById('status-indicator');
+    rf.style.display = 'none';
+    ind.style.display = 'none';
+    ind.className = 'status-indicator';
+    if (!status) return;
+    const c = STATUS_CONFIG[status];
+    ind.style.display = 'flex';
+    ind.classList.add(c.css);
+    ind.innerHTML = c.label;
+    if (c.rastreio) rf.style.display = 'block';
+  }
+  async function enviarStatus() {
+    const nome    = document.getElementById('cliente-nome').value.trim();
+    const email   = document.getElementById('cliente-email').value.trim();
+    const status  = document.getElementById('status-select').value;
+    const rastreio = document.getElementById('codigo-rastreio').value.trim();
+    const fb  = document.getElementById('send-feedback');
+    const btn = document.getElementById('send-btn');
+    
+    // Tenta pegar o código do pedido que você buscou antes
+    const codigoPedido = document.getElementById('busca-codigo').value.trim().toUpperCase();
+
+    fb.className = 'feedback'; fb.textContent = '';
+
+    if (!nome || !email || !status) { fb.className = 'feedback error'; fb.textContent = 'Preencha todos os campos.'; return; }
+    if (status === 'enviado' && !rastreio) { fb.className = 'feedback error'; fb.textContent = 'Informe o código de rastreio.'; return; }
+
+    const c = STATUS_CONFIG[status];
+    btn.disabled = true; btn.textContent = 'Processando...';
+    
+    try {
+      // 1. Envia o E-mail
+      emailjs.init(c.publicKey);
+      await emailjs.send(c.serviceId, c.templateId, { to_email: email, cliente_nome: nome, codigo_rastreio: rastreio || '' });
+
+      // 2. ATUALIZA A PLANILHA (O que estava faltando)
+      // Mapeia o valor do select para o texto que vai na planilha
+      const statusFormatado = status.charAt(0).toUpperCase() + status.slice(1); // vira 'Enviado', 'Pendente', etc
+      
+      if (codigoPedido) {
+        const updateUrl = `${SHEETS_URL}?acao=update&codigo=${codigoPedido}&status=${statusFormatado}`;
+        await fetch(updateUrl, { mode: 'no-cors' }); // no-cors para evitar erro de trava do Google
+      }
+
+      fb.className = 'feedback success';
+      fb.innerHTML = `<i class="ph ph-check-circle"></i> E-mail enviado e Planilha atualizada!`;
+      
+      // Limpa os campos
+      document.getElementById('cliente-nome').value = '';
+      document.getElementById('cliente-email').value = '';
+      document.getElementById('codigo-rastreio').value = '';
       document.getElementById('status-select').value = '';
       handleStatusChange();
+      
+      // Recarrega os dados para atualizar os números no topo
+      setTimeout(carregarTudo, 2000);
+
+    } catch (err) {
+      fb.className = 'feedback error';
+      fb.textContent = 'Erro ao processar. Tente novamente.';
+      console.error(err);
     }
+    btn.disabled = false; btn.textContent = 'Enviar E-mail';
+  }
 
-    // ── STATUS ──
-    function handleStatusChange() {
-      const status = document.getElementById('status-select').value;
-      const rf = document.getElementById('rastreio-field');
-      const ind = document.getElementById('status-indicator');
-      rf.style.display = 'none';
-      ind.style.display = 'none';
-      ind.className = 'status-indicator';
-      if (!status) return;
-      const c = STATUS_CONFIG[status];
-      ind.style.display = 'flex';
-      ind.classList.add(c.css);
-      ind.innerHTML = c.label;
-      if (c.rastreio) rf.style.display = 'block';
+  // ── CANCELAR ──
+  async function cancelarPedido(codigo) {
+    if (!confirm(`Cancelar o pedido ${codigo}? Ele será removido da planilha.`)) return;
+
+    try {
+      await fetch(`${SHEETS_URL}?acao=delete&codigo=${codigo}`, { mode: 'no-cors' });
+
+      // Remove do array local
+      allPedidos = allPedidos.filter(p => p['Código'] !== codigo);
+      renderStats();
+      renderRecent();
+      renderAll('todos');
+
+      // Limpa a tela de busca
+      document.getElementById('pedido-encontrado').classList.remove('visible');
+      document.getElementById('busca-feedback').className = 'feedback error';
+      document.getElementById('busca-feedback').textContent = `Pedido ${codigo} cancelado e removido.`;
+      document.getElementById('busca-codigo').value = '';
+
+    } catch (err) {
+      alert('Erro ao cancelar. Tente novamente.');
+      console.error(err);
     }
-    async function enviarStatus() {
-      const nome = document.getElementById('cliente-nome').value.trim();
-      const email = document.getElementById('cliente-email').value.trim();
-      const status = document.getElementById('status-select').value;
-      const rastreio = document.getElementById('codigo-rastreio').value.trim();
-      const fb = document.getElementById('send-feedback');
-      const btn = document.getElementById('send-btn');
+  }
 
-      // Tenta pegar o código do pedido que você buscou antes
-      const codigoPedido = document.getElementById('busca-codigo').value.trim().toUpperCase();
-
-      fb.className = 'feedback'; fb.textContent = '';
-
-      if (!nome || !email || !status) { fb.className = 'feedback error'; fb.textContent = 'Preencha todos os campos.'; return; }
-      if (status === 'enviado' && !rastreio) { fb.className = 'feedback error'; fb.textContent = 'Informe o código de rastreio.'; return; }
-
-      const c = STATUS_CONFIG[status];
-      btn.disabled = true; btn.textContent = 'Processando...';
-
-      try {
-        // 1. Envia o E-mail
-        emailjs.init(c.publicKey);
-        await emailjs.send(c.serviceId, c.templateId, { to_email: email, cliente_nome: nome, codigo_rastreio: rastreio || '' });
-
-        // 2. ATUALIZA A PLANILHA (O que estava faltando)
-        // Mapeia o valor do select para o texto que vai na planilha
-        const statusFormatado = status.charAt(0).toUpperCase() + status.slice(1); // vira 'Enviado', 'Pendente', etc
-
-        if (codigoPedido) {
-          const updateUrl = `${SHEETS_URL}?acao=update&codigo=${codigoPedido}&status=${statusFormatado}`;
-          await fetch(updateUrl, { mode: 'no-cors' }); // no-cors para evitar erro de trava do Google
-        }
-
-        fb.className = 'feedback success';
-        fb.innerHTML = `<i class="ph ph-check-circle"></i> E-mail enviado e Planilha atualizada!`;
-
-        // Limpa os campos
-        document.getElementById('cliente-nome').value = '';
-        document.getElementById('cliente-email').value = '';
-        document.getElementById('codigo-rastreio').value = '';
-        document.getElementById('status-select').value = '';
-        handleStatusChange();
-
-        // Recarrega os dados para atualizar os números no topo
-        setTimeout(carregarTudo, 2000);
-
-      } catch (err) {
-        fb.className = 'feedback error';
-        fb.textContent = 'Erro ao processar. Tente novamente.';
-        console.error(err);
-      }
-      btn.disabled = false; btn.textContent = 'Enviar E-mail';
-    }
-
-    // ── CANCELAR ──
-    async function cancelarPedido(codigo) {
-      if (!confirm(`Cancelar o pedido ${codigo}? Ele será removido da planilha.`)) return;
-
-      try {
-        await fetch(`${SHEETS_URL}?acao=delete&codigo=${codigo}`, { mode: 'no-cors' });
-
-        // Remove do array local
-        allPedidos = allPedidos.filter(p => p['Código'] !== codigo);
-        renderStats();
-        renderRecent();
-        renderAll('todos');
-
-        // Limpa a tela de busca
-        document.getElementById('pedido-encontrado').classList.remove('visible');
-        document.getElementById('busca-feedback').className = 'feedback error';
-        document.getElementById('busca-feedback').textContent = `Pedido ${codigo} cancelado e removido.`;
-        document.getElementById('busca-codigo').value = '';
-
-      } catch (err) {
-        alert('Erro ao cancelar. Tente novamente.');
-        console.error(err);
-      }
-    }
-
-    // ── UTILS ──
-    function badgeHTML(status) {
-      const map = { 'Pendente': 'pendente', 'Enviado': 'enviado', 'Entregue': 'entregue', 'Confirmado': 'confirmado' };
-      const icons = { 'pendente': 'ph-hourglass-high', 'enviado': 'ph-package', 'entregue': 'ph-check-circle', 'confirmado': 'ph-shopping-cart' };
-      const cls = map[status] || 'pendente';
-      const icon = icons[cls] || 'ph-hourglass-high';
-      return `<span class="badge badge-${cls}"><i class="ph ${icon}"></i> ${status || 'Pendente'}</span>`;
-    }
-  </script>
+  // ── UTILS ──
+  function badgeHTML(status) {
+    const map = { 'Pendente': 'pendente', 'Enviado': 'enviado', 'Entregue': 'entregue', 'Confirmado': 'confirmado' };
+    const icons = { 'pendente': 'ph-hourglass-high', 'enviado': 'ph-package', 'entregue': 'ph-check-circle', 'confirmado': 'ph-shopping-cart' };
+    const cls = map[status] || 'pendente';
+    const icon = icons[cls] || 'ph-hourglass-high';
+    return `<span class="badge badge-${cls}"><i class="ph ${icon}"></i> ${status || 'Pendente'}</span>`;
+  }
+</script>
 </body>
-
 </html>

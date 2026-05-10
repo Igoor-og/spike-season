@@ -621,14 +621,17 @@
   <script>
     // ── ADMIN MODE ──
     let adminAtivo = false;
-    function toggleAdmin() {
+    async function toggleAdmin() {
       if (adminAtivo) {
         adminAtivo = false;
         document.body.classList.remove('admin-mode');
         return;
       }
       const senha = prompt('Senha admin:');
-      if (senha === '1629admin') {
+      if (!senha) return;
+      const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
+      const hexHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
+      if (hexHash === 'da5ce85c28b6d3e05cfb00d164bb470065856714cb28da81b3106466fb4c2de5') {
         adminAtivo = true;
         document.body.classList.add('admin-mode');
       } else if (senha !== null) {
