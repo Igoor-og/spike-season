@@ -310,6 +310,44 @@
       transition: opacity 0.2s;
     }
     .lightbox-close:hover { opacity: 1; }
+    .delete-btn {
+      display: none;
+      width: calc(100% - 32px);
+      margin: 0 16px 16px;
+      padding: 8px;
+      background: none;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #444;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .delete-btn:hover { border-color: #dc2626; color: #f87171; background: rgba(220,38,38,0.06); }
+    body.admin-mode .delete-btn { display: block; }
+
+    .admin-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      padding: 10px 18px;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 24px;
+      color: #444;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      z-index: 500;
+      transition: all 0.2s;
+    }
+    .admin-toggle:hover { border-color: var(--primary-purple); color: var(--primary-purple); }
+    body.admin-mode .admin-toggle { border-color: var(--primary-purple); color: var(--primary-purple); background: rgba(123,44,255,0.1); }
   </style>
 </head>
 <body>
@@ -330,16 +368,15 @@
   </header>
 
   <!-- Side Menu -->
-  <div class="menu-overlay" id="menu-overlay">
-    <div class="menu-close" id="menu-close">&times;</div>
-    <nav>
-      <a href="index.html" class="menu-item">Início</a>
-      <div style="height:20px;"></div>
-      <a href="comunidade.html" class="menu-item" style="color:var(--primary-purple);">Comunidade</a>
-      <div style="height:20px;"></div>
-      <a href="mailto:contato16.29@gmail.com" class="menu-item">Suporte</a>
-    </nav>
-  </div>
+    <div class="menu-overlay" id="menu-overlay">
+        <div class="menu-close" id="menu-close">&times;</div>
+        <nav>
+            <a href="index.html" class="menu-item">Início</a>
+            <a href="comunidade.html" class="menu-item" style="color: var(--primary-purple);">Comunidade</a>
+            <a href="mailto:contato16.29@gmail.com" class="menu-item">Suporte</a>
+            <a href="admin.html" class="menu-item" style="margin-top: 40px; font-size: 0.75rem; color: var(--gray-text); letter-spacing: 0.2em;">Admin</a>
+        </nav>
+    </div>
 
   <main class="comunidade-main">
 
@@ -354,7 +391,7 @@
     <!-- Form -->
     <div class="post-form-card">
       <div class="form-inner">
-        <h3>📸 Compartilhar minha foto</h3>
+        <h3>Compartilhar minha foto</h3>
 
         <div class="form-row">
           <div class="f-field">
@@ -376,7 +413,7 @@
           <label>Foto usando o produto *</label>
           <div class="upload-area" id="upload-area">
             <input type="file" id="post-foto" accept="image/*">
-            <div class="upload-icon">📷</div>
+            <div class="upload-icon">+</div>
             <div class="upload-text">Toque para selecionar uma foto</div>
             <img class="upload-preview" id="upload-preview" alt="preview">
           </div>
@@ -392,7 +429,7 @@
     <!-- Feed -->
     <div class="feed-section">
       <div class="feed-header">
-        <h2>📱 Feed da Comunidade</h2>
+        <h2>Feed da Comunidade</h2>
         <span class="feed-count" id="feed-count"></span>
       </div>
       <div id="feed-grid" class="feed-grid">
@@ -410,10 +447,13 @@
     <img id="lightbox-img" src="" alt="">
   </div>
 
+  <!-- Admin toggle -->
+  <button class="admin-toggle" id="admin-toggle" onclick="toggleAdmin()">Admin</button>
+
   <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
     const firebaseConfig = {
@@ -489,7 +529,7 @@
         });
 
         fb.className = 'post-feedback success';
-        fb.textContent = '✅ Post publicado! Obrigado por compartilhar.';
+        fb.textContent = 'Post publicado! Obrigado por compartilhar.';
 
         // Limpa form
         document.getElementById('post-nome').value  = '';
@@ -524,7 +564,7 @@
         const snap = await getDocs(q);
 
         if (snap.empty) {
-          grid.innerHTML = '<div class="feed-empty"><p style="font-size:2rem;">📭</p><p>Nenhum post ainda. Seja o primeiro!</p></div>';
+          grid.innerHTML = '<div class="feed-empty"><p>Nenhum post ainda. Seja o primeiro!</p></div>';
           document.getElementById('feed-count').textContent = '';
           return;
         }
@@ -539,6 +579,7 @@
 
           const card = document.createElement('div');
           card.className = 'post-card';
+          card.dataset.id = doc.id;
           card.innerHTML = `
             <img class="post-img" src="${d.fotoURL}" alt="Foto de ${d.nome}" loading="lazy" onclick="openLightbox('${d.fotoURL}')">
             <div class="post-body">
@@ -548,8 +589,9 @@
                 <span class="post-date">${data}</span>
               </div>
               <p class="post-text">${d.texto}</p>
-              ${d.cidade ? `<span class="post-cidade">📍 ${d.cidade}</span>` : ''}
+              ${d.cidade ? `<span class="post-cidade">${d.cidade}</span>` : ''}
             </div>
+            <button class="delete-btn" data-id="${doc.id}" onclick="confirmarDelete('${doc.id}', this)">Remover</button>
           `;
           grid.appendChild(card);
         });
@@ -560,10 +602,40 @@
       }
     }
 
+    window.confirmarDelete = async function(id, btn) {
+      if (!confirm('Remover este post?')) return;
+      try {
+        await deleteDoc(doc(db, 'posts', id));
+        btn.closest('.post-card').remove();
+        const count = document.querySelectorAll('.post-card').length;
+        document.getElementById('feed-count').textContent = count + ' post' + (count !== 1 ? 's' : '');
+      } catch (err) {
+        alert('Erro ao remover. Tente novamente.');
+        console.error(err);
+      }
+    };
+
     carregarFeed();
   </script>
 
   <script>
+    // ── ADMIN MODE ──
+    let adminAtivo = false;
+    function toggleAdmin() {
+      if (adminAtivo) {
+        adminAtivo = false;
+        document.body.classList.remove('admin-mode');
+        return;
+      }
+      const senha = prompt('Senha admin:');
+      if (senha === '1629admin') {
+        adminAtivo = true;
+        document.body.classList.add('admin-mode');
+      } else if (senha !== null) {
+        alert('Senha incorreta.');
+      }
+    }
+
     // ── LIGHTBOX ──
     function openLightbox(src) {
       document.getElementById('lightbox-img').src = src;
