@@ -712,7 +712,7 @@ async function sendToFormspree() {
     const freightVal = document.getElementById('summary-freight')?.innerText || "0,00";
     const discountVal = document.getElementById('summary-discount')?.innerText || "0,00";
 
-    const codigoPedido = gerarCodigoPedido();
+    const codigoPedido = await gerarCodigoPedido();
 
     // Organize items for a clean email
     const itemsDescription = state.cart.map(item =>
