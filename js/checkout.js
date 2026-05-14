@@ -481,6 +481,7 @@ function runPixCheckout() {
     const paidBtn = document.getElementById('pix-paid');
     if (container) container.classList.remove('hidden');
     const color = state.cart[0]?.color || state.selectedColor || 'Preto';
+    const qty = state.cart.reduce((acc, it) => acc + (it.quantity || 1), 0);
     if (sum) sum.innerHTML = `Produto: SPIKE GLASSES<br>Cor: ${color}<br>Quantidade: ${qty}<br>Frete: ${formatBRL(freight)}<br>Cupom: ${state.appliedCoupon ? state.appliedCoupon.code : 'Nenhum'}<br>Total: <strong>${formatBRL(final)}</strong>`;
     const reference = String(Date.now());
     const payload = generatePixPayload(PIX_KEY, STORE_NAME, STORE_CITY, final, reference);
