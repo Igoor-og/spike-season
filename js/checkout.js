@@ -466,11 +466,11 @@ function generatePixPayload(key, name, city, amount, reference) {
 }
 
 function runPixCheckout() {
-    const qty = state.cart.reduce((acc, it) => acc + (it.quantity || 1), 0);
+    const subtotalPix = state.cart.reduce((acc, it) => acc + ((it.price || PRODUCT_PRICE) * (it.quantity || 1)), 0);
     let freight = state.freight;
     if (state.appliedCoupon && (state.appliedCoupon.code === 'DEV5' || state.appliedCoupon.code === 'FLEXZERO')) freight = 0;
-    const percent = state.appliedCoupon ? state.appliedCoupon.value : 0;
-    const final = calculateFinalPrice(PRODUCT_PRICE, qty, freight, percent, 0);
+    const discount = state.appliedCoupon ? (subtotalPix + freight) * state.appliedCoupon.value : 0;
+    const final = Number((subtotalPix + freight - discount).toFixed(2));
     const container = document.getElementById('pix-container');
     const sum = document.getElementById('pix-summary');
     const codeEl = document.getElementById('pix-code');
