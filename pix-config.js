@@ -1,3 +1,3 @@
-const PIX_KEY = "11939297868";
+const PIX_KEY = "+5511939297868";
 const STORE_NAME = "1629";
 const STORE_CITY = "SAO_PAULO";
