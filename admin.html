@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --purple: #7B2FBE;
@@ -305,6 +306,18 @@
     /* ── SECTION LABEL ── */
     .section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
     .section-label i { font-size: 1.1rem; color: var(--purple); }
+  
+    .log-list { list-style: none; }
+    .log-item { display: flex; flex-direction: column; gap: 3px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .log-item:last-child { border-bottom: none; }
+    .log-action { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+    .log-meta { font-size: 0.72rem; color: var(--muted); display: flex; gap: 8px; }
+    .log-user { color: var(--purple-text); font-weight: 600; }
+    .chart-wrap { position: relative; height: 200px; margin-top: 8px; }
+    .field textarea { width: 100%; padding: 14px 16px; background: var(--input); border: 1px solid var(--border2); border-radius: 12px; color: var(--text); font-size: 1rem; font-family: inherit; outline: none; resize: none; transition: all 0.2s ease; min-height: 100px; }
+    .field textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(123,47,190,0.15); }
+    .field textarea::placeholder { color: #444; }
+    #nome-input-wrap { display: none; }
   </style>
 </head>
 <body>
@@ -321,7 +334,12 @@
         <label>Senha</label>
         <input type="password" id="senha-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
       </div>
-      <button class="btn" onclick="login()">Entrar</button>
+      <div id="nome-input-wrap" class="field" style="margin-top:12px;">
+        <label>Seu nome</label>
+        <input type="text" id="nome-input" placeholder="Ex: Igor" onkeydown="if(event.key==='Enter') confirmarNome()">
+        <button class="btn" style="margin-top:12px;" onclick="confirmarNome()">Entrar no Painel</button>
+      </div>
+      <button class="btn" id="btn-login" onclick="login()">Entrar</button>
       <div class="feedback" id="login-feedback"></div>
     </div>
   </div>
@@ -361,6 +379,10 @@
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title"><i class="ph ph-chart-pie" style="font-size:1.2rem;"></i> Status dos Pedidos</div>
+        <div class="chart-wrap"><canvas id="chart-status"></canvas></div>
+      </div>
       <div class="section-label" style="margin-top:8px;"><i class="ph ph-clock-counter-clockwise"></i> Últimos Pedidos</div>
       <div id="recent-orders"><div class="loading"><div class="loading-spinner"></div><br>Carregando...</div></div>
     </div>
@@ -438,6 +460,33 @@
     </div>
   </div>
 
+  <!-- PAGE: RESPONDER -->
+  <div class="page" id="page-responder">
+    <div style="padding-top:16px;">
+      <div class="card">
+        <div class="card-title"><i class="ph ph-chat-text" style="font-size:1.2rem;"></i> Responder Cliente</div>
+        <div class="field"><label>E-mail do Cliente</label><input type="email" id="resp-email" placeholder="cliente@gmail.com"></div>
+        <div class="field"><label>Dúvida do Cliente</label><textarea id="resp-duvida" placeholder="Dúvida enviada pelo cliente..."></textarea></div>
+        <div class="field"><label>Sua Resposta</label><textarea id="resp-resposta" placeholder="Digite sua resposta..."></textarea></div>
+        <button class="btn" id="resp-btn" onclick="responderCliente()"><i class="ph ph-chat-text" style="font-size:1.1rem;margin-right:6px;"></i>Enviar Resposta</button>
+        <div class="feedback" id="resp-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: LOGS -->
+  <div class="page" id="page-logs">
+    <div style="padding-top:16px;">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div class="card-title" style="margin:0;"><i class="ph ph-clock-counter-clockwise" style="font-size:1.2rem;"></i> Histórico</div>
+          <button class="btn btn-sm btn-ghost" onclick="limparLogs()">Limpar</button>
+        </div>
+        <ul class="log-list" id="log-list"><li style="text-align:center;color:var(--muted);padding:40px 0;font-size:0.85rem;">Nenhuma ação registrada.</li></ul>
+      </div>
+    </div>
+  </div>
+
   <!-- Bottom Nav -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="bn-home" onclick="navTo('home')">
@@ -446,11 +495,14 @@
     <button class="nav-item" id="bn-pedidos" onclick="navTo('pedidos')">
       <i class="ph ph-package nav-icon"></i>Pedidos
     </button>
-    <button class="nav-item" id="bn-busca" onclick="navTo('busca')">
-      <i class="ph ph-magnifying-glass nav-icon"></i>Buscar
-    </button>
     <button class="nav-item" id="bn-email" onclick="navTo('email')">
       <i class="ph ph-paper-plane-tilt nav-icon"></i>Status
+    </button>
+    <button class="nav-item" id="bn-responder" onclick="navTo('responder')">
+      <i class="ph ph-chat-text nav-icon"></i>Responder
+    </button>
+    <button class="nav-item" id="bn-logs" onclick="navTo('logs')">
+      <i class="ph ph-clock-counter-clockwise nav-icon"></i>Logs
     </button>
   </nav>
 
@@ -458,6 +510,27 @@
 
 <script>
   const SENHA_HASH = 'da5ce85c28b6d3e05cfb00d164bb470065856714cb28da81b3106466fb4c2de5';
+  const RESP_SERVICE  = 'service_iac4rqs';
+  const RESP_TEMPLATE = 'template_4zfn6oa';
+  let adminNome = sessionStorage.getItem('adminNome') || 'Admin';
+  function registrarLog(acao) {
+    const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+    logs.unshift({ usuario: adminNome, acao, ts: new Date().toLocaleString('pt-BR') });
+    if (logs.length > 50) logs.pop();
+    localStorage.setItem('adminLogs', JSON.stringify(logs));
+  }
+  function renderLogs() {
+    const el = document.getElementById('log-list');
+    if (!el) return;
+    const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+    if (!logs.length) { el.innerHTML = '<li style="text-align:center;color:var(--muted);padding:40px 0;font-size:0.85rem;">Nenhuma ação registrada.</li>'; return; }
+    el.innerHTML = logs.map(l => `<li class="log-item"><span class="log-action">${l.acao}</span><span class="log-meta"><span class="log-user">${l.usuario}</span> · ${l.ts}</span></li>`).join('');
+  }
+  function limparLogs() {
+    if (!confirm('Limpar histórico?')) return;
+    localStorage.removeItem('adminLogs');
+    renderLogs();
+  }
   const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwTMyWKVyeSoh0YbQupIniFom7PTj0LeEhGxTRyePiTBbBW__LfWuNwPRp_5ng7og2wTg/exec';
 
   const STATUS_CONFIG = {
@@ -476,9 +549,10 @@
     const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
     const hexHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
     if (hexHash === SENHA_HASH) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-screen').style.display = 'block';
-      carregarTudo();
+      document.getElementById('btn-login').style.display = 'none';
+      document.getElementById('nome-input-wrap').style.display = 'block';
+      document.getElementById('login-feedback').className = '';
+      document.getElementById('nome-input').focus();
     } else {
       fb.className = 'feedback error';
       fb.textContent = 'Senha incorreta.';
@@ -486,13 +560,25 @@
     }
   }
 
+  function confirmarNome() {
+    const nome = document.getElementById('nome-input').value.trim();
+    if (!nome) { document.getElementById('nome-input').focus(); return; }
+    adminNome = nome;
+    sessionStorage.setItem('adminNome', nome);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    registrarLog('Entrou no painel');
+    carregarTudo();
+  }
+
   // ── NAVIGATION ──
-  const pages = ['home','pedidos','busca','email'];
+  const pages = ['home','pedidos','busca','email','responder','logs'];
   function navTo(page) {
     pages.forEach(p => {
       document.getElementById('page-' + p).classList.toggle('active', p === page);
       document.getElementById('bn-' + p)?.classList.toggle('active', p === page);
     });
+    if (page === 'logs') renderLogs();
   }
 
   // ── LOAD DATA ──
@@ -504,6 +590,7 @@
       renderStats();
       renderRecent();
       renderAll('todos');
+      renderChart();
     } catch {
       allPedidos = [];
       renderStats();
@@ -663,6 +750,7 @@
 
       fb.className = 'feedback success';
       fb.innerHTML = `<i class="ph ph-check-circle"></i> E-mail enviado e Planilha atualizada!`;
+      registrarLog(`Status "${statusFormatado}" enviado para ${email}`);
       
       // Limpa os campos
       document.getElementById('cliente-nome').value = '';
@@ -695,6 +783,7 @@
       renderRecent();
       renderAll('todos');
 
+      registrarLog(`Pedido ${codigo} cancelado`);
       // Limpa a tela de busca
       document.getElementById('pedido-encontrado').classList.remove('visible');
       document.getElementById('busca-feedback').className = 'feedback error';
@@ -705,6 +794,47 @@
       alert('Erro ao cancelar. Tente novamente.');
       console.error(err);
     }
+  }
+
+  // ── CHART ──
+  let chartInstance = null;
+  function renderChart() {
+    const ctx = document.getElementById('chart-status');
+    if (!ctx) return;
+    const pendente = allPedidos.filter(p => p['Status'] === 'Pendente').length;
+    const enviado  = allPedidos.filter(p => p['Status'] === 'Enviado').length;
+    const entregue = allPedidos.filter(p => p['Status'] === 'Entregue').length;
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels: ['Pendente','Enviado','Entregue'], datasets: [{ data: [pendente,enviado,entregue], backgroundColor: ['rgba(245,158,11,0.8)','rgba(123,47,190,0.8)','rgba(34,197,94,0.8)'], borderColor: ['#f59e0b','#7B2FBE','#22c55e'], borderWidth: 1, hoverOffset: 6 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: '#888', font: { size: 11, family: 'Inter' }, padding: 16, boxWidth: 12 } } } }
+    });
+  }
+
+  // ── RESPONDER CLIENTE ──
+  async function responderCliente() {
+    const email    = document.getElementById('resp-email').value.trim();
+    const duvida   = document.getElementById('resp-duvida').value.trim();
+    const resposta = document.getElementById('resp-resposta').value.trim();
+    const fb  = document.getElementById('resp-feedback');
+    const btn = document.getElementById('resp-btn');
+    fb.className = 'feedback'; fb.textContent = '';
+    if (!email || !resposta) { fb.className = 'feedback error'; fb.textContent = 'Preencha e-mail e resposta.'; return; }
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    emailjs.init('ryP4Z5DJ3339nHr61');
+    try {
+      await emailjs.send(RESP_SERVICE, RESP_TEMPLATE, { to_email: email, duvida_cliente: duvida || '-', resposta_admin: resposta });
+      fb.className = 'feedback success';
+      fb.innerHTML = '<i class="ph ph-check-circle"></i> Resposta enviada!';
+      registrarLog(`Respondeu cliente: ${email}`);
+      document.getElementById('resp-email').value = '';
+      document.getElementById('resp-duvida').value = '';
+      document.getElementById('resp-resposta').value = '';
+    } catch (err) {
+      fb.className = 'feedback error'; fb.textContent = 'Erro ao enviar.';
+    }
+    btn.disabled = false; btn.innerHTML = '<i class="ph ph-chat-text" style="font-size:1.1rem;margin-right:6px;"></i>Enviar Resposta';
   }
 
   // ── UTILS ──
